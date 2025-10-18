@@ -2,6 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { DataStatusMonitor } from '@/components/dashboard/data-status-monitor'
 import { 
   CheckCircleIcon, 
   ExclamationTriangleIcon,
@@ -77,6 +78,9 @@ export default function StatusPage() {
             </div>
           </div>
         </Card>
+
+        {/* Monitor de Dados em Tempo Real */}
+        {hasSupabaseConfig && <DataStatusMonitor />}
 
         {!hasSupabaseConfig && (
           <Card className="p-6 border-yellow-200 bg-yellow-50">

@@ -1,6 +1,0 @@
-services:
-  pulsofinance:
-    image: pulsofinance
-    build:
-      context: .
-      dockerfile: ./Dockerfile

@@ -1,0 +1,175 @@
+-- =============================================
+-- CONTROLE DE EXECUÇÃO - MIGRAÇÃO YAMPA
+-- =============================================
+--
+-- Total de arquivos: 143
+-- Total de registros: 21,351
+-- Gerado em: 2025-10-17 17:49:04
+--
+-- INSTRUÇÕES:
+-- 1. Execute os arquivos na ordem (01, 02, 03...)
+-- 2. Aguarde cada arquivo terminar antes do próximo
+-- 3. Se der timeout, pare e continue do próximo arquivo
+--
+-- VERIFICAÇÃO FINAL:
+-- SELECT COUNT(*) FROM lancamentos WHERE origem = 'migracao_yampa';
+-- (Resultado esperado: 21,351)
+--
+-- =============================================
+
+-- Lista de arquivos para executar:
+-- 01_yampa_lote_001.sql
+-- 02_yampa_lote_002.sql
+-- 03_yampa_lote_003.sql
+-- 04_yampa_lote_004.sql
+-- 05_yampa_lote_005.sql
+-- 06_yampa_lote_006.sql
+-- 07_yampa_lote_007.sql
+-- 08_yampa_lote_008.sql
+-- 09_yampa_lote_009.sql
+-- 10_yampa_lote_010.sql
+-- 11_yampa_lote_011.sql
+-- 12_yampa_lote_012.sql
+-- 13_yampa_lote_013.sql
+-- 14_yampa_lote_014.sql
+-- 15_yampa_lote_015.sql
+-- 16_yampa_lote_016.sql
+-- 17_yampa_lote_017.sql
+-- 18_yampa_lote_018.sql
+-- 19_yampa_lote_019.sql
+-- 20_yampa_lote_020.sql
+-- 21_yampa_lote_021.sql
+-- 22_yampa_lote_022.sql
+-- 23_yampa_lote_023.sql
+-- 24_yampa_lote_024.sql
+-- 25_yampa_lote_025.sql
+-- 26_yampa_lote_026.sql
+-- 27_yampa_lote_027.sql
+-- 28_yampa_lote_028.sql
+-- 29_yampa_lote_029.sql
+-- 30_yampa_lote_030.sql
+-- 31_yampa_lote_031.sql
+-- 32_yampa_lote_032.sql
+-- 33_yampa_lote_033.sql
+-- 34_yampa_lote_034.sql
+-- 35_yampa_lote_035.sql
+-- 36_yampa_lote_036.sql
+-- 37_yampa_lote_037.sql
+-- 38_yampa_lote_038.sql
+-- 39_yampa_lote_039.sql
+-- 40_yampa_lote_040.sql
+-- 41_yampa_lote_041.sql
+-- 42_yampa_lote_042.sql
+-- 43_yampa_lote_043.sql
+-- 44_yampa_lote_044.sql
+-- 45_yampa_lote_045.sql
+-- 46_yampa_lote_046.sql
+-- 47_yampa_lote_047.sql
+-- 48_yampa_lote_048.sql
+-- 49_yampa_lote_049.sql
+-- 50_yampa_lote_050.sql
+-- 51_yampa_lote_051.sql
+-- 52_yampa_lote_052.sql
+-- 53_yampa_lote_053.sql
+-- 54_yampa_lote_054.sql
+-- 55_yampa_lote_055.sql
+-- 56_yampa_lote_056.sql
+-- 57_yampa_lote_057.sql
+-- 58_yampa_lote_058.sql
+-- 59_yampa_lote_059.sql
+-- 60_yampa_lote_060.sql
+-- 61_yampa_lote_061.sql
+-- 62_yampa_lote_062.sql
+-- 63_yampa_lote_063.sql
+-- 64_yampa_lote_064.sql
+-- 65_yampa_lote_065.sql
+-- 66_yampa_lote_066.sql
+-- 67_yampa_lote_067.sql
+-- 68_yampa_lote_068.sql
+-- 69_yampa_lote_069.sql
+-- 70_yampa_lote_070.sql
+-- 71_yampa_lote_071.sql
+-- 72_yampa_lote_072.sql
+-- 73_yampa_lote_073.sql
+-- 74_yampa_lote_074.sql
+-- 75_yampa_lote_075.sql
+-- 76_yampa_lote_076.sql
+-- 77_yampa_lote_077.sql
+-- 78_yampa_lote_078.sql
+-- 79_yampa_lote_079.sql
+-- 80_yampa_lote_080.sql
+-- 81_yampa_lote_081.sql
+-- 82_yampa_lote_082.sql
+-- 83_yampa_lote_083.sql
+-- 84_yampa_lote_084.sql
+-- 85_yampa_lote_085.sql
+-- 86_yampa_lote_086.sql
+-- 87_yampa_lote_087.sql
+-- 88_yampa_lote_088.sql
+-- 89_yampa_lote_089.sql
+-- 90_yampa_lote_090.sql
+-- 91_yampa_lote_091.sql
+-- 92_yampa_lote_092.sql
+-- 93_yampa_lote_093.sql
+-- 94_yampa_lote_094.sql
+-- 95_yampa_lote_095.sql
+-- 96_yampa_lote_096.sql
+-- 97_yampa_lote_097.sql
+-- 98_yampa_lote_098.sql
+-- 99_yampa_lote_099.sql
+-- 100_yampa_lote_100.sql
+-- 101_yampa_lote_101.sql
+-- 102_yampa_lote_102.sql
+-- 103_yampa_lote_103.sql
+-- 104_yampa_lote_104.sql
+-- 105_yampa_lote_105.sql
+-- 106_yampa_lote_106.sql
+-- 107_yampa_lote_107.sql
+-- 108_yampa_lote_108.sql
+-- 109_yampa_lote_109.sql
+-- 110_yampa_lote_110.sql
+-- 111_yampa_lote_111.sql
+-- 112_yampa_lote_112.sql
+-- 113_yampa_lote_113.sql
+-- 114_yampa_lote_114.sql
+-- 115_yampa_lote_115.sql
+-- 116_yampa_lote_116.sql
+-- 117_yampa_lote_117.sql
+-- 118_yampa_lote_118.sql
+-- 119_yampa_lote_119.sql
+-- 120_yampa_lote_120.sql
+-- 121_yampa_lote_121.sql
+-- 122_yampa_lote_122.sql
+-- 123_yampa_lote_123.sql
+-- 124_yampa_lote_124.sql
+-- 125_yampa_lote_125.sql
+-- 126_yampa_lote_126.sql
+-- 127_yampa_lote_127.sql
+-- 128_yampa_lote_128.sql
+-- 129_yampa_lote_129.sql
+-- 130_yampa_lote_130.sql
+-- 131_yampa_lote_131.sql
+-- 132_yampa_lote_132.sql
+-- 133_yampa_lote_133.sql
+-- 134_yampa_lote_134.sql
+-- 135_yampa_lote_135.sql
+-- 136_yampa_lote_136.sql
+-- 137_yampa_lote_137.sql
+-- 138_yampa_lote_138.sql
+-- 139_yampa_lote_139.sql
+-- 140_yampa_lote_140.sql
+-- 141_yampa_lote_141.sql
+-- 142_yampa_lote_142.sql
+-- 143_yampa_lote_143.sql
+
+-- =============================================
+-- VERIFICAÇÃO RÁPIDA (execute após todos os lotes)
+-- =============================================
+SELECT 
+  'Migração Yampa' as status,
+  COUNT(l.id) as lancamentos,
+  COUNT(p.id) as parcelas,
+  SUM(l.valor_total)::numeric(12,2) as valor_total
+FROM lancamentos l
+LEFT JOIN parcelas p ON l.id = p.lancamento_id
+WHERE l.origem = 'migracao_yampa';

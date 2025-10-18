@@ -25,7 +25,7 @@ const navigation = [
   { name: 'Fluxo de Caixa', href: '/dashboard/fluxo-caixa', icon: BanknotesIcon, roles: ['admin', 'gerencial', 'financeiro'] },
   { name: 'Análise Financeira', href: '/dashboard/analise', icon: ChartPieIcon, roles: ['admin', 'gerencial'] },
   { name: 'Relatórios', href: '/dashboard/relatorios', icon: CalculatorIcon, roles: ['admin', 'gerencial'] },
-  { name: 'Lojas', href: '/dashboard/lojas', icon: BuildingStorefrontIcon, roles: ['admin'] },
+  { name: 'Lojas', href: '/dashboard/lojas', icon: BuildingStorefrontIcon, roles: ['admin', 'gerencial'] },
   { name: 'Usuários', href: '/dashboard/usuarios', icon: UserGroupIcon, roles: ['admin'] },
   { name: 'Configurações', href: '/dashboard/configuracoes', icon: Cog6ToothIcon, roles: ['admin'] },
 ]

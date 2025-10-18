@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/auth-context'
 import { formatCurrency, calculateVariation, getMonthName } from '@/lib/utils'
+import { useLancamentosStats, useLancamentosEvoluçaoMensal, useLancamentosPorLoja } from './use-lancamentos'
+import { useLojas, useComparativoLojas } from './use-lojas'
 
 export interface DashboardKPI {
   name: string
