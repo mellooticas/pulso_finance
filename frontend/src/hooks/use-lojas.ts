@@ -37,7 +37,7 @@ export function useLojas() {
 
       return data as Loja[]
     },
-    enabled: !!user,
+    enabled: true,
   })
 }
 
@@ -61,7 +61,7 @@ export function useLoja(id: string) {
 
       return data as Loja
     },
-    enabled: !!user && !!id,
+    enabled: !!id,
   })
 }
 
@@ -137,7 +137,7 @@ export function useLojaStats(lojaId: string, periodo?: { inicio: string; fim: st
         pagamentoPendente: stats.totalDespesas - stats.despesasPagas
       }
     },
-    enabled: !!user && !!lojaId,
+    enabled: !!lojaId,
   })
 }
 
@@ -189,7 +189,7 @@ export function useComparativoLojas(periodo?: { inicio: string; fim: string }) {
 
       return comparativo.sort((a, b) => b.resultado - a.resultado)
     },
-    enabled: !!user && !!lojas,
+    enabled: !!lojas,
   })
 }
 

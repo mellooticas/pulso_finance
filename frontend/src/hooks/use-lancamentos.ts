@@ -24,13 +24,12 @@ export interface Lancamento {
     id: string
     codigo: string
     nome: string
-    cidade: string
   }
   plano_conta?: {
     id: string
     codigo: string
     nome: string
-    tipo: string
+    categoria: string
   }
   parcelas?: Parcela[]
 }
@@ -42,7 +41,7 @@ export interface Parcela {
   vencimento: string
   valor: number
   valor_pago: number
-  status: 'pendente' | 'pago' | 'atrasado'
+  status: 'previsto' | 'pago' | 'atrasado'
   data_pagamento?: string
   forma_pagamento_id?: string
   
@@ -50,7 +49,6 @@ export interface Parcela {
   forma_pagamento?: {
     id: string
     nome: string
-    tipo: string
   }
 }
 
@@ -66,8 +64,6 @@ export interface LancamentoFilters {
 
 // Hook principal para lançamentos
 export function useLancamentos(filters: LancamentoFilters = {}) {
-  const { user } = useAuth()
-
   return useQuery({
     queryKey: ['lancamentos', filters],
     queryFn: async () => {
@@ -75,11 +71,11 @@ export function useLancamentos(filters: LancamentoFilters = {}) {
         .from('lancamentos')
         .select(`
           *,
-          loja:lojas!inner(id, codigo, nome, cidade),
-          plano_conta:plano_contas!inner(id, codigo, nome, tipo),
+          loja:lojas!inner(id, codigo, nome),
+          plano_conta:plano_contas!inner(id, codigo, nome, categoria),
           parcelas(
             *,
-            forma_pagamento:formas_pagamento(id, nome, tipo)
+            forma_pagamento:formas_pagamento(id, nome)
           )
         `)
         .order('competencia', { ascending: false })
@@ -114,14 +110,11 @@ export function useLancamentos(filters: LancamentoFilters = {}) {
 
       return data as Lancamento[]
     },
-    enabled: !!user,
   })
 }
 
 // Hook para estatísticas dos lançamentos
 export function useLancamentosStats(filters: LancamentoFilters = {}) {
-  const { user } = useAuth()
-
   return useQuery({
     queryKey: ['lancamentos-stats', filters],
     queryFn: async () => {
@@ -159,14 +152,11 @@ export function useLancamentosStats(filters: LancamentoFilters = {}) {
 
       return stats
     },
-    enabled: !!user,
   })
 }
 
 // Hook para evolução mensal
 export function useLancamentosEvoluçaoMensal(ano: number = new Date().getFullYear()) {
-  const { user } = useAuth()
-
   return useQuery({
     queryKey: ['lancamentos-evolucao', ano],
     queryFn: async () => {
@@ -202,14 +192,11 @@ export function useLancamentosEvoluçaoMensal(ano: number = new Date().getFullYe
 
       return evolucao
     },
-    enabled: !!user,
   })
 }
 
 // Hook para lançamentos por loja
-export function useLancamentosPorLoja(filters: Omit<LancamentoFilters, 'loja_id'> = {}) {
-  const { user } = useAuth()
-
+export function useLancamentosPorLoja(filters: LancamentoFilters = {}) {
   return useQuery({
     queryKey: ['lancamentos-por-loja', filters],
     queryFn: async () => {
@@ -218,7 +205,7 @@ export function useLancamentosPorLoja(filters: Omit<LancamentoFilters, 'loja_id'
         .select(`
           tipo,
           valor_total,
-          loja:lojas!inner(id, codigo, nome, cidade)
+          loja:lojas!inner(id, codigo, nome)
         `)
 
       // Aplicar filtros exceto loja_id
@@ -232,11 +219,12 @@ export function useLancamentosPorLoja(filters: Omit<LancamentoFilters, 'loja_id'
 
       // Agrupar por loja
       const porLoja = data.reduce((acc, lancamento) => {
-        const lojaId = lancamento.loja.id
+        const loja = Array.isArray(lancamento.loja) ? lancamento.loja[0] : lancamento.loja
+        const lojaId = loja?.id
         
-        if (!acc[lojaId]) {
+        if (!lojaId || !acc[lojaId]) {
           acc[lojaId] = {
-            loja: lancamento.loja,
+            loja: loja,
             receitas: 0,
             despesas: 0,
             resultado: 0,
@@ -260,7 +248,6 @@ export function useLancamentosPorLoja(filters: Omit<LancamentoFilters, 'loja_id'
         resultado: item.receitas - item.despesas
       }))
     },
-    enabled: !!user,
   })
 }
 

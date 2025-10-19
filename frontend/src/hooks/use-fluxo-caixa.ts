@@ -136,7 +136,7 @@ export function useFluxoCaixa(periodo: FluxoCaixaPeriodo) {
 
       return fluxoCaixa
     },
-    enabled: !!user,
+    enabled: true,
     staleTime: 1000 * 60 * 5, // 5 minutos
   })
 }
@@ -185,7 +185,7 @@ export function useVencimentosProximos() {
         totalPagar: aPagar.reduce((sum, p) => sum + p.valor, 0)
       }
     },
-    enabled: !!user,
+    enabled: true,
     staleTime: 1000 * 60 * 15, // 15 minutos
   })
 }

@@ -16,3 +16,18 @@ SELECT
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
 ORDER BY table_name;
+
+| Tabela             | Ícone |
+| ------------------ | ----- |
+| auditoria          | 📋    |
+| centros_custo      | 📋    |
+| conciliacoes       | 📋    |
+| contas_financeiras | 📋    |
+| extratos_bancarios | 📋    |
+| formas_pagamento   | 📋    |
+| fornecedores       | 📋    |
+| lancamentos        | 💰    |
+| lojas              | 🏢    |
+| parcelas           | 📋    |
+| plano_contas       | 📊    |
+| usuarios           | 👥    |

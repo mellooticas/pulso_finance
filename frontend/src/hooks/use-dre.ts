@@ -36,7 +36,7 @@ export function usePlanoContas() {
 
       return data as PlanoConta[]
     },
-    enabled: !!user,
+    enabled: true,
   })
 }
 
@@ -156,7 +156,7 @@ export function useDRE(periodo?: { inicio: string; fim: string }, lojaId?: strin
         }
       }
     },
-    enabled: !!user,
+    enabled: true,
   })
 }
 
@@ -211,7 +211,7 @@ export function useDREEvoluçaoMensal(ano: number = new Date().getFullYear(), lo
 
       return evolucao
     },
-    enabled: !!user,
+    enabled: true,
   })
 }
 
@@ -276,6 +276,6 @@ export function useComparativoDRE(periodo?: { inicio: string; fim: string }) {
 
       return Object.values(comparativo).sort((a: any, b: any) => b.receitas - a.receitas)
     },
-    enabled: !!user,
+    enabled: true,
   })
 }
