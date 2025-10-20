@@ -9,6 +9,12 @@ export interface FluxoCaixaPeriodo {
   fim: string
 }
 
+export interface FluxoCaixaFilters {
+  periodo: FluxoCaixaPeriodo
+  lojaId?: string
+  centroCustoId?: string
+}
+
 export interface SaldoConta {
   conta_id: string
   conta_nome: string
@@ -30,11 +36,12 @@ export interface FluxoCaixaData {
 }
 
 // Hook para dados de fluxo de caixa
-export function useFluxoCaixa(periodo: FluxoCaixaPeriodo) {
+export function useFluxoCaixa(filters: FluxoCaixaFilters) {
   const { user } = useAuth()
+  const { periodo, lojaId, centroCustoId } = filters
 
   return useQuery({
-    queryKey: ['fluxo-caixa', periodo],
+    queryKey: ['fluxo-caixa', filters],
     queryFn: async () => {
       // 1. Buscar saldos das contas financeiras
       const { data: contas, error: contasError } = await supabase
@@ -44,8 +51,8 @@ export function useFluxoCaixa(periodo: FluxoCaixaPeriodo) {
 
       if (contasError) throw contasError
 
-      // 2. Buscar lançamentos do período
-      const { data: lancamentos, error: lancamentosError } = await supabase
+      // 2. Buscar lançamentos do período com filtros
+      let query = supabase
         .from('lancamentos')
         .select(`
           tipo,
@@ -59,6 +66,16 @@ export function useFluxoCaixa(periodo: FluxoCaixaPeriodo) {
         `)
         .gte('competencia', periodo.inicio)
         .lte('competencia', periodo.fim)
+      
+      // Aplicar filtros opcionais
+      if (lojaId) {
+        query = query.eq('loja_id', lojaId)
+      }
+      if (centroCustoId) {
+        query = query.eq('centro_custo_id', centroCustoId)
+      }
+
+      const { data: lancamentos, error: lancamentosError } = await query
 
       if (lancamentosError) throw lancamentosError
 
@@ -86,7 +103,7 @@ export function useFluxoCaixa(periodo: FluxoCaixaPeriodo) {
       const dataLimite = new Date()
       dataLimite.setDate(dataLimite.getDate() - 30)
       
-      const { data: saidasRecentes, error: saidasError } = await supabase
+      let querySaidas = supabase
         .from('lancamentos')
         .select(`
           valor_total,
@@ -98,6 +115,16 @@ export function useFluxoCaixa(periodo: FluxoCaixaPeriodo) {
         `)
         .eq('tipo', 'pagar')
         .gte('competencia', dataLimite.toISOString().split('T')[0])
+      
+      // Aplicar mesmos filtros
+      if (lojaId) {
+        querySaidas = querySaidas.eq('loja_id', lojaId)
+      }
+      if (centroCustoId) {
+        querySaidas = querySaidas.eq('centro_custo_id', centroCustoId)
+      }
+
+      const { data: saidasRecentes, error: saidasError } = await querySaidas
 
       if (saidasError) throw saidasError
 

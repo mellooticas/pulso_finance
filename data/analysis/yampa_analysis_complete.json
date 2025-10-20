@@ -1,0 +1,228 @@
+{
+  "fornecedores": [
+    {
+      "nome": "Braslab Produtos Óticos",
+      "categoria": "Laboratório",
+      "cnpj": "17.123.456/0001-89",
+      "especialidades": [
+        "Laboratório de lentes",
+        "Surfaçagem",
+        "Tratamentos"
+      ]
+    },
+    {
+      "nome": "Optotal Hoya Ltda",
+      "categoria": "Lentes",
+      "cnpj": "43.816.580/0001-00",
+      "especialidades": [
+        "Lentes progressivas",
+        "Lentes multifocais",
+        "Tratamentos especiais"
+      ]
+    },
+    {
+      "nome": "Solótica Distribuidora",
+      "categoria": "Lentes de Contato",
+      "cnpj": "65.532.707/0001-94",
+      "especialidades": [
+        "Lentes de contato coloridas",
+        "Lentes corretivas",
+        "Lentes especiais"
+      ]
+    },
+    {
+      "nome": "Carl Zeiss Vision",
+      "categoria": "Lentes Premium",
+      "cnpj": "07.394.127/0001-42",
+      "especialidades": [
+        "Lentes oftálmicas premium",
+        "Tratamentos anti-reflexo",
+        "Lentes multifocais"
+      ]
+    },
+    {
+      "nome": "Fast Company Armações",
+      "categoria": "Armações",
+      "cnpj": "23.456.789/0001-12",
+      "especialidades": [
+        "Armações metálicas",
+        "Armações acetato",
+        "Acessórios"
+      ]
+    }
+  ],
+  "produtos": {
+    "lentes": {
+      "monofocais": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "multifocais": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "progressivas": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "contato": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      }
+    },
+    "armacoes": {
+      "metalicas": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "acetato": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "titanio": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      }
+    },
+    "tratamentos": {
+      "anti_reflexo": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "fotossensivel": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "blue_light": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      }
+    },
+    "servicos": {
+      "consertos": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "ajustes": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      },
+      "manutencao": {
+        "count": 0,
+        "valor_medio": 0,
+        "valores": []
+      }
+    }
+  },
+  "colaboradores": {},
+  "lojas": {
+    "Loja Suzano": {
+      "nome": "Loja Suzano",
+      "receita_total": 3205100.940000005,
+      "despesa_total": -3450275.420000017,
+      "transacoes": 20909,
+      "resultado": 6655376.360000022,
+      "margem": 207.64950884823028
+    },
+    "Loja Sao Mateus": {
+      "nome": "Loja Sao Mateus",
+      "receita_total": 13268.65,
+      "despesa_total": -87887.67999999995,
+      "transacoes": 392,
+      "resultado": 101156.32999999994,
+      "margem": 762.3709269594113
+    },
+    "Loja Maua": {
+      "nome": "Loja Maua",
+      "receita_total": 166640.0000000001,
+      "despesa_total": -601485.5899999997,
+      "transacoes": 3206,
+      "resultado": 768125.5899999999,
+      "margem": 460.94910585693674
+    },
+    "Loja Suzano II": {
+      "nome": "Loja Suzano II",
+      "receita_total": 544159.4899999995,
+      "despesa_total": -248572.75000000017,
+      "transacoes": 1534,
+      "resultado": 792732.2399999998,
+      "margem": 145.68012771402746
+    },
+    "Loja Rio Pequeno": {
+      "nome": "Loja Rio Pequeno",
+      "receita_total": 689147.0299999996,
+      "despesa_total": -655890.2400000005,
+      "transacoes": 2424,
+      "resultado": 1345037.27,
+      "margem": 195.17420977639574
+    },
+    "Loja Mauá": {
+      "nome": "Loja Mauá",
+      "receita_total": 643860.21,
+      "despesa_total": -619391.5800000011,
+      "transacoes": 2913,
+      "resultado": 1263251.790000001,
+      "margem": 196.19969837862803
+    },
+    "Loja São Mateus": {
+      "nome": "Loja São Mateus",
+      "receita_total": 209292.42,
+      "despesa_total": -269249.25999999896,
+      "transacoes": 1389,
+      "resultado": 478541.679999999,
+      "margem": 228.64740156380194
+    },
+    "Loja Perus": {
+      "nome": "Loja Perus",
+      "receita_total": 331005.49999999994,
+      "despesa_total": -344149.7099999997,
+      "transacoes": 1276,
+      "resultado": 675155.2099999996,
+      "margem": 203.97099443966934
+    }
+  },
+  "resumo_executivo": {
+    "periodo_analise": {
+      "total_registros": 45133,
+      "data_inicio": "2020-10-01",
+      "data_fim": "2025-09-09"
+    },
+    "financeiro": {
+      "receita_total": 8201275.13,
+      "despesa_total": -8602238.88,
+      "resultado": 16803514.01,
+      "margem_percentual": 204.89
+    },
+    "operacional": {
+      "total_fornecedores": 5,
+      "total_colaboradores": 0,
+      "total_lojas": 8,
+      "vendas_dinheiro": 1538,
+      "vendas_cartao": 1689
+    },
+    "recomendacoes": [
+      "Implementar controle automático de estoque por categoria",
+      "Sistema de comissões baseado em vendas por colaborador",
+      "Relatórios comparativos entre lojas",
+      "Controle de fornecedores com histórico de compras",
+      "Dashboard com KPIs em tempo real"
+    ]
+  },
+  "metadata": {
+    "gerado_em": "2025-10-19T00:32:43.548782",
+    "versao_analise": "2.0",
+    "arquivo_origem": "d:/projetos/pulso_finance/data/base/yampa_consolidated_completo.csv"
+  }
+}

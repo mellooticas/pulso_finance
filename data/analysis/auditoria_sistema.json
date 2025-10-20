@@ -1,0 +1,572 @@
+{
+  "hooks": [
+    {
+      "arquivo": "frontend\\src\\hooks\\use-auth-redirect.ts",
+      "tipo": "outro",
+      "linhas": 41,
+      "queries": [],
+      "hooks_usados": [
+        "useAuthRedirect(",
+        "useRouter(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-centros-custo.ts",
+      "tipo": "outro",
+      "linhas": 210,
+      "queries": [],
+      "hooks_usados": [
+        "useCentroCusto(",
+        "useMutation(",
+        "useQueryClient(",
+        "useCreateCentroCusto(",
+        "useDeleteCentroCusto(",
+        "useCentrosCusto(",
+        "useAuth(",
+        "useCentrosCustoStats(",
+        "useUpdateCentroCusto(",
+        "useQuery("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-dashboard-data.ts",
+      "tipo": "outro",
+      "linhas": 383,
+      "queries": [],
+      "hooks_usados": [
+        "useEffect(",
+        "useAuth(",
+        "useDashboardData(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-dashboard-real.ts",
+      "tipo": "outro",
+      "linhas": 197,
+      "queries": [],
+      "hooks_usados": [
+        "useDRE(",
+        "useDashboardDataReal(",
+        "useLancamentosStats(",
+        "useComparativoLojas(",
+        "useLancamentosEvoluçaoMensal("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-data-monitor.ts",
+      "tipo": "outro",
+      "linhas": 120,
+      "queries": [],
+      "hooks_usados": [
+        "useEffect(",
+        "useDataMonitor(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-dre.ts",
+      "tipo": "outro",
+      "linhas": 281,
+      "queries": [],
+      "hooks_usados": [
+        "useDRE(",
+        "useComparativoDRE(",
+        "useContasPorTipo(",
+        "usePlanoContas(",
+        "useDREEvoluçaoMensal(",
+        "useAuth(",
+        "useQuery("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-fluxo-caixa.ts",
+      "tipo": "outro",
+      "linhas": 206,
+      "queries": [],
+      "hooks_usados": [
+        "useFluxoCaixa(",
+        "useAuth(",
+        "useVencimentosProximos(",
+        "useQuery("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": [
+        "Tem TODO/FIXME no código"
+      ]
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-lancamentos.ts",
+      "tipo": "outro",
+      "linhas": 354,
+      "queries": [],
+      "hooks_usados": [
+        "useMutation(",
+        "useQueryClient(",
+        "useCreateLancamento(",
+        "useLancamentos(",
+        "useDeleteLancamento(",
+        "useLancamentosStats(",
+        "useLancamentosPorLoja(",
+        "useUpdateLancamento(",
+        "useQuery(",
+        "useLancamentosEvoluçaoMensal("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\use-lojas.ts",
+      "tipo": "outro",
+      "linhas": 233,
+      "queries": [],
+      "hooks_usados": [
+        "useLojas(",
+        "useAuth(",
+        "useLoja(",
+        "useRankingLojas(",
+        "useComparativoLojas(",
+        "useLojaStats(",
+        "useQuery("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\useContasFuturas.ts",
+      "tipo": "outro",
+      "linhas": 461,
+      "queries": [],
+      "hooks_usados": [
+        "useFluxoCaixaRealizado(",
+        "useContasPendentes(",
+        "useDREComparativo(",
+        "useProjecaoFluxo(",
+        "useDashboardKPIsCorrigido(",
+        "useQuery("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\useFinancialIntelligence.ts",
+      "tipo": "outro",
+      "linhas": 541,
+      "queries": [],
+      "hooks_usados": [
+        "useIndicadoresEnterprise(",
+        "useAnaliseCentroCusto(",
+        "useDecisoesHoje(",
+        "useContasAPagarInteligente(",
+        "useContasAReceberInteligente(",
+        "useQuery("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\hooks\\useRealData.ts",
+      "tipo": "outro",
+      "linhas": 596,
+      "queries": [],
+      "hooks_usados": [
+        "useProdutos(",
+        "useDRE(",
+        "useMutation(",
+        "useQueryClient(",
+        "useCreateLancamento(",
+        "useFornecedores(",
+        "useLancamentosAvancados(",
+        "useDashboardKPIs(",
+        "useFluxoCaixaReal(",
+        "useUpdateLancamento(",
+        "useQuery("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": [
+        "Tem TODO/FIXME no código"
+      ]
+    }
+  ],
+  "paginas": [
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\page.tsx",
+      "tipo": "outro",
+      "linhas": 401,
+      "queries": [],
+      "hooks_usados": [
+        "useFluxoCaixa(",
+        "useDataMonitor(",
+        "useDashboardDataReal(",
+        "useVencimentosProximos(",
+        "useAuth("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\analise\\page.tsx",
+      "tipo": "outro",
+      "linhas": 501,
+      "queries": [],
+      "hooks_usados": [
+        "useDRE(",
+        "useLojas(",
+        "useState(",
+        "useLancamentosStats(",
+        "useLancamentosEvoluçaoMensal("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\backup\\page.tsx",
+      "tipo": "outro",
+      "linhas": 422,
+      "queries": [],
+      "hooks_usados": [
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": true,
+      "problemas": [
+        "Usa dados mockados"
+      ]
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\balancete\\page.tsx",
+      "tipo": "outro",
+      "linhas": 447,
+      "queries": [],
+      "hooks_usados": [
+        "useLancamentos(",
+        "usePlanoContas(",
+        "useLojas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\centros-custo\\page.tsx",
+      "tipo": "outro",
+      "linhas": 335,
+      "queries": [],
+      "hooks_usados": [
+        "useCentrosCusto(",
+        "useLojas(",
+        "useCentrosCustoStats(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\comparativos\\page.tsx",
+      "tipo": "outro",
+      "linhas": 502,
+      "queries": [],
+      "hooks_usados": [
+        "useLancamentos(",
+        "useLojas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\configuracoes\\page.tsx",
+      "tipo": "outro",
+      "linhas": 423,
+      "queries": [],
+      "hooks_usados": [],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\contas-pagar\\page.tsx",
+      "tipo": "outro",
+      "linhas": 455,
+      "queries": [],
+      "hooks_usados": [
+        "useLancamentos(",
+        "useLancamentosStats(",
+        "useLojas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\contas-receber\\page.tsx",
+      "tipo": "outro",
+      "linhas": 455,
+      "queries": [],
+      "hooks_usados": [
+        "useLancamentos(",
+        "useLancamentosStats(",
+        "useLojas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\decisoes\\page.tsx",
+      "tipo": "outro",
+      "linhas": 310,
+      "queries": [],
+      "hooks_usados": [
+        "useIndicadoresEnterprise(",
+        "useAnaliseCentroCusto(",
+        "useDecisoesHoje(",
+        "useContasAPagarInteligente(",
+        "useContasAReceberInteligente("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\dre\\page.tsx",
+      "tipo": "outro",
+      "linhas": 434,
+      "queries": [],
+      "hooks_usados": [
+        "useDREEvoluçaoMensal(",
+        "useDRE(",
+        "useLojas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\fluxo-caixa\\page.tsx",
+      "tipo": "outro",
+      "linhas": 461,
+      "queries": [],
+      "hooks_usados": [
+        "useFluxoCaixa(",
+        "useLojas(",
+        "useVencimentosProximos(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": true,
+      "problemas": [
+        "Usa dados mockados"
+      ]
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\fornecedores\\page.tsx",
+      "tipo": "outro",
+      "linhas": 395,
+      "queries": [],
+      "hooks_usados": [
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": true,
+      "problemas": [
+        "Usa dados mockados"
+      ]
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\importacao\\page.tsx",
+      "tipo": "outro",
+      "linhas": 9,
+      "queries": [],
+      "hooks_usados": [],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\lancamentos\\page.tsx",
+      "tipo": "outro",
+      "linhas": 350,
+      "queries": [],
+      "hooks_usados": [
+        "useLancamentos(",
+        "usePlanoContas(",
+        "useLojas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\lojas\\page.tsx",
+      "tipo": "outro",
+      "linhas": 483,
+      "queries": [],
+      "hooks_usados": [
+        "useLojas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\plano-contas\\page.tsx",
+      "tipo": "outro",
+      "linhas": 409,
+      "queries": [],
+      "hooks_usados": [
+        "usePlanoContas(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\produtos\\page.tsx",
+      "tipo": "outro",
+      "linhas": 344,
+      "queries": [],
+      "hooks_usados": [
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": true,
+      "problemas": [
+        "Usa dados mockados"
+      ]
+    },
+    {
+      "arquivo": "frontend\\src\\app\\dashboard\\usuarios\\page.tsx",
+      "tipo": "outro",
+      "linhas": 345,
+      "queries": [],
+      "hooks_usados": [
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": true,
+      "problemas": [
+        "Usa dados mockados"
+      ]
+    }
+  ],
+  "componentes": [
+    {
+      "arquivo": "frontend\\src\\components\\dashboard\\ContasFuturas.tsx",
+      "tipo": "outro",
+      "linhas": 418,
+      "queries": [],
+      "hooks_usados": [
+        "useContasPendentes(",
+        "useDREComparativo(",
+        "useProjecaoFluxo(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\components\\dashboard\\data-status-monitor.tsx",
+      "tipo": "outro",
+      "linhas": 156,
+      "queries": [],
+      "hooks_usados": [
+        "useDataMonitor("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\components\\dashboard\\header.tsx",
+      "tipo": "outro",
+      "linhas": 96,
+      "queries": [],
+      "hooks_usados": [
+        "useAuth("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\components\\dashboard\\importador-dados-reais.tsx",
+      "tipo": "outro",
+      "linhas": 382,
+      "queries": [],
+      "hooks_usados": [
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\components\\dashboard\\migration-progress-tracker.tsx",
+      "tipo": "outro",
+      "linhas": 201,
+      "queries": [],
+      "hooks_usados": [
+        "useEffect(",
+        "useState("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    },
+    {
+      "arquivo": "frontend\\src\\components\\dashboard\\sidebar.tsx",
+      "tipo": "outro",
+      "linhas": 236,
+      "queries": [],
+      "hooks_usados": [
+        "usePathname(",
+        "useAuth("
+      ],
+      "tabelas": [],
+      "usa_mock": false,
+      "problemas": []
+    }
+  ],
+  "queries_supabase": [],
+  "tabelas_usadas": [],
+  "problemas": [],
+  "estatisticas": {}
+}

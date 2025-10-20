@@ -1,0 +1,345 @@
+{
+  "status_geral": {
+    "Indefinido": 28008,
+    "Recebido": 17123,
+    "A Receber": 2
+  },
+  "contas_futuras": {
+    "total_receber": 0.0,
+    "total_pagar": 0.0,
+    "saldo_futuro": 0.0,
+    "por_mes": {
+      "2025-10": {
+        "receber": 0.0,
+        "pagar": -16958.93,
+        "saldo": 16958.93,
+        "count": 26
+      },
+      "2025-11": {
+        "receber": 0.0,
+        "pagar": -36532.01000000001,
+        "saldo": 36532.01000000001,
+        "count": 54
+      },
+      "2025-12": {
+        "receber": 0.0,
+        "pagar": -36527.87,
+        "saldo": 36527.87,
+        "count": 55
+      },
+      "2026-01": {
+        "receber": 0.0,
+        "pagar": -31792.380000000005,
+        "saldo": 31792.380000000005,
+        "count": 42
+      },
+      "2026-02": {
+        "receber": 0.0,
+        "pagar": -8605.05,
+        "saldo": 8605.05,
+        "count": 23
+      },
+      "2026-03": {
+        "receber": 0.0,
+        "pagar": -7393.7,
+        "saldo": 7393.7,
+        "count": 20
+      },
+      "2026-04": {
+        "receber": 0.0,
+        "pagar": -4264.97,
+        "saldo": 4264.97,
+        "count": 9
+      },
+      "2026-05": {
+        "receber": 0.0,
+        "pagar": -2214.9700000000003,
+        "saldo": 2214.9700000000003,
+        "count": 5
+      },
+      "2026-06": {
+        "receber": 0.0,
+        "pagar": -2214.9700000000003,
+        "saldo": 2214.9700000000003,
+        "count": 5
+      },
+      "2026-07": {
+        "receber": 0.0,
+        "pagar": -2214.9700000000003,
+        "saldo": 2214.9700000000003,
+        "count": 5
+      },
+      "2026-08": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2026-09": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2026-10": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2026-11": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2026-12": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-01": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-02": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-03": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-04": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-05": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-06": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-07": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-08": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-09": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-10": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-11": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2027-12": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-01": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-02": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-03": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-04": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-05": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-06": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-07": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-08": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-09": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-10": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-11": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2028-12": {
+        "receber": 0.0,
+        "pagar": -1068.71,
+        "saldo": 1068.71,
+        "count": 4
+      },
+      "2029-01": {
+        "receber": 0.0,
+        "pagar": -1068.8400000000001,
+        "saldo": 1068.8400000000001,
+        "count": 4
+      },
+      "2029-02": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      },
+      "2029-03": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      },
+      "2029-04": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      },
+      "2029-05": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      },
+      "2029-06": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      },
+      "2029-07": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      },
+      "2029-08": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      },
+      "2029-09": {
+        "receber": 0.0,
+        "pagar": -800.0,
+        "saldo": 800.0,
+        "count": 2
+      }
+    }
+  },
+  "parcelas_pendentes": {
+    "receber": {
+      "quantidade": 2,
+      "valor_total": 362.33
+    },
+    "pagar": {
+      "quantidade": 0,
+      "valor_total": 0.0
+    }
+  },
+  "fluxo_realizacao": {
+    "receitas": {
+      "esperadas": 8201275.129999999,
+      "realizadas": 8200808.09,
+      "diferenca": -467.03999999910593,
+      "taxa_realizacao": 99.99430527579436
+    },
+    "despesas": {
+      "esperadas": -8415057.629999999,
+      "realizadas": -7900763.39,
+      "diferenca": 514294.2399999993,
+      "taxa_realizacao": 0.0
+    }
+  },
+  "problemas_criticos": [
+    "📅 6,154 lançamentos com data divergente",
+    "💰 76 lançamentos com valores divergentes",
+    "⏰ 2 lançamentos antigos ainda pendentes",
+    "❓ 2 lançamentos com valores zerados suspeitos"
+  ],
+  "recomendacoes": [
+    "📞 Implementar sistema de cobrança para parcelas pendentes",
+    "🔄 Implementar separação clara entre 'Competência' e 'Caixa'",
+    "📋 Criar view de 'Contas a Pagar/Receber' separada",
+    "📈 Dashboard com projeção de fluxo futuro",
+    "⚠️ Alertas para vencimentos próximos",
+    "🎯 KPIs de realização vs projetado"
+  ],
+  "metadata": {
+    "data_analise": "2025-10-19T01:28:21.558086",
+    "total_registros": 45133,
+    "data_base_analise": "2025-10-19"
+  }
+}

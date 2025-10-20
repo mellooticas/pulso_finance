@@ -248,7 +248,7 @@ export default function DashboardPage() {
             Erro ao Carregar Dados
           </h3>
           <p className="text-slate-600 mb-4">
-            {error}
+            {error?.message || 'Erro desconhecido'}
           </p>
           <button
             onClick={refetch}

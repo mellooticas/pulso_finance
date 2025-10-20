@@ -9,7 +9,7 @@ export interface PlanoConta {
   id: string
   codigo: string
   nome: string
-  tipo: 'receita' | 'despesa' | 'ativo' | 'passivo' | 'patrimonio'
+  categoria: 'receita' | 'despesa' | 'ativo' | 'passivo' | 'patrimonio'
   parent_id?: string
   nivel: number
   ativa: boolean
@@ -41,25 +41,32 @@ export function usePlanoContas() {
 }
 
 // Hook para contas por tipo
-export function useContasPorTipo(tipo: PlanoConta['tipo']) {
+export function useContasPorTipo(categoria: PlanoConta['categoria']) {
   const { data: todasContas } = usePlanoContas()
 
   return useQuery({
-    queryKey: ['contas-por-tipo', tipo, todasContas],
+    queryKey: ['contas-por-tipo', categoria, todasContas],
     queryFn: async () => {
       if (!todasContas) return []
-      return todasContas.filter(conta => conta.tipo === tipo)
+      return todasContas.filter(conta => conta.categoria === categoria)
     },
     enabled: !!todasContas,
   })
 }
 
+// Interface para filtros do DRE
+export interface DREFilters {
+  periodo?: { inicio: string; fim: string }
+  lojaId?: string
+  centroCustoId?: string
+}
+
 // Hook para DRE (Demonstração do Resultado do Exercício)
-export function useDRE(periodo?: { inicio: string; fim: string }, lojaId?: string) {
+export function useDRE(filters?: DREFilters) {
   const { user } = useAuth()
 
   return useQuery({
-    queryKey: ['dre', periodo, lojaId],
+    queryKey: ['dre', filters],
     queryFn: async () => {
       // Buscar lançamentos do período
       let query = supabase
@@ -68,22 +75,28 @@ export function useDRE(periodo?: { inicio: string; fim: string }, lojaId?: strin
           tipo,
           valor_total,
           competencia,
-          plano_conta:plano_contas(id, codigo, nome, tipo)
+          plano_conta:plano_contas(id, codigo, nome, categoria)
         `)
 
-      if (periodo?.inicio) {
-        query = query.gte('competencia', periodo.inicio)
+      if (filters?.periodo?.inicio) {
+        query = query.gte('competencia', filters.periodo.inicio)
       }
-      if (periodo?.fim) {
-        query = query.lte('competencia', periodo.fim)
+      if (filters?.periodo?.fim) {
+        query = query.lte('competencia', filters.periodo.fim)
       }
-      if (lojaId) {
-        query = query.eq('loja_id', lojaId)
+      if (filters?.lojaId) {
+        query = query.eq('loja_id', filters.lojaId)
+      }
+      if (filters?.centroCustoId) {
+        query = query.eq('centro_custo_id', filters.centroCustoId)
       }
 
       const { data, error } = await query
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erro ao carregar DRE:', error)
+        throw error
+      }
 
       // Estruturar DRE
       const dre = {
@@ -102,8 +115,10 @@ export function useDRE(periodo?: { inicio: string; fim: string }, lojaId?: strin
       }
 
       // Processar lançamentos
-      data.forEach(lancamento => {
-        const conta = lancamento.plano_conta
+      data.forEach((lancamento: any) => {
+        const conta = Array.isArray(lancamento.plano_conta) ? lancamento.plano_conta[0] : lancamento.plano_conta
+        if (!conta) return
+        
         const valor = lancamento.valor_total
 
         if (lancamento.tipo === 'receber') {
@@ -161,11 +176,11 @@ export function useDRE(periodo?: { inicio: string; fim: string }, lojaId?: strin
 }
 
 // Hook para evolução DRE mensal
-export function useDREEvoluçaoMensal(ano: number = new Date().getFullYear(), lojaId?: string) {
+export function useDREEvoluçaoMensal(ano: number = new Date().getFullYear(), filters?: { lojaId?: string; centroCustoId?: string }) {
   const { user } = useAuth()
 
   return useQuery({
-    queryKey: ['dre-evolucao', ano, lojaId],
+    queryKey: ['dre-evolucao', ano, filters],
     queryFn: async () => {
       let query = supabase
         .from('lancamentos')
@@ -173,13 +188,19 @@ export function useDREEvoluçaoMensal(ano: number = new Date().getFullYear(), lo
         .gte('competencia', `${ano}-01-01`)
         .lte('competencia', `${ano}-12-31`)
 
-      if (lojaId) {
-        query = query.eq('loja_id', lojaId)
+      if (filters?.lojaId) {
+        query = query.eq('loja_id', filters.lojaId)
+      }
+      if (filters?.centroCustoId) {
+        query = query.eq('centro_custo_id', filters.centroCustoId)
       }
 
       const { data, error } = await query
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erro ao carregar evolução DRE:', error)
+        throw error
+      }
 
       // Agrupar por mês
       const evolucao = Array.from({ length: 12 }, (_, i) => {
@@ -216,11 +237,11 @@ export function useDREEvoluçaoMensal(ano: number = new Date().getFullYear(), lo
 }
 
 // Hook para comparativo DRE por loja
-export function useComparativoDRE(periodo?: { inicio: string; fim: string }) {
+export function useComparativoDRE(filters?: { periodo?: { inicio: string; fim: string }; centroCustoId?: string }) {
   const { user } = useAuth()
 
   return useQuery({
-    queryKey: ['comparativo-dre', periodo],
+    queryKey: ['comparativo-dre', filters],
     queryFn: async () => {
       let query = supabase
         .from('lancamentos')
@@ -230,24 +251,33 @@ export function useComparativoDRE(periodo?: { inicio: string; fim: string }) {
           loja:lojas(id, codigo, nome, cidade)
         `)
 
-      if (periodo?.inicio) {
-        query = query.gte('competencia', periodo.inicio)
+      if (filters?.periodo?.inicio) {
+        query = query.gte('competencia', filters.periodo.inicio)
       }
-      if (periodo?.fim) {
-        query = query.lte('competencia', periodo.fim)
+      if (filters?.periodo?.fim) {
+        query = query.lte('competencia', filters.periodo.fim)
+      }
+      if (filters?.centroCustoId) {
+        query = query.eq('centro_custo_id', filters.centroCustoId)
       }
 
       const { data, error } = await query
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erro ao carregar comparativo DRE:', error)
+        throw error
+      }
 
       // Agrupar por loja
-      const comparativo = data.reduce((acc, lancamento) => {
-        const lojaId = lancamento.loja.id
+      const comparativo = data.reduce((acc: any, lancamento: any) => {
+        const loja = Array.isArray(lancamento.loja) ? lancamento.loja[0] : lancamento.loja
+        if (!loja) return acc
+        
+        const lojaId = loja.id
         
         if (!acc[lojaId]) {
           acc[lojaId] = {
-            loja: lancamento.loja,
+            loja,
             receitas: 0,
             despesas: 0,
             resultado: 0,
@@ -263,7 +293,7 @@ export function useComparativoDRE(periodo?: { inicio: string; fim: string }) {
         }
 
         return acc
-      }, {} as Record<string, any>)
+      }, {})
 
       // Calcular resultado, margem e participação
       const totalReceitas = Object.values(comparativo).reduce((acc: number, item: any) => acc + item.receitas, 0)

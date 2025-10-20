@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { useLancamentos, type LancamentoFilters } from '@/hooks/use-lancamentos'
 import { useLojas } from '@/hooks/use-lojas'
+import { useCentrosCusto } from '@/hooks/use-centros-custo'
 import { usePlanoContas } from '@/hooks/use-dre'
 import { formatKPIValue } from '@/hooks/use-dashboard-real'
 
@@ -25,6 +26,7 @@ export default function LancamentosPage() {
   // Dados
   const { data: lancamentos, isLoading, error } = useLancamentos(filters)
   const { data: lojas } = useLojas()
+  const { data: centrosCusto } = useCentrosCusto()
   const { data: planoContas } = usePlanoContas()
 
   // Paginação
@@ -48,7 +50,7 @@ export default function LancamentosPage() {
   }
 
   const getTipoColor = (tipo: string) => {
-    return tipo === 'receber' 
+    return tipo === 'receita' 
       ? 'text-green-600 bg-green-50' 
       : 'text-red-600 bg-red-50'
   }
@@ -108,7 +110,7 @@ export default function LancamentosPage() {
       {/* Filtros */}
       {showFilters && (
         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Filtro por Loja */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Loja</label>
@@ -126,6 +128,23 @@ export default function LancamentosPage() {
               </select>
             </div>
 
+            {/* Filtro por Centro de Custo */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Centro de Custo</label>
+              <select
+                value={filters.centro_custo_id || ''}
+                onChange={(e) => handleFilterChange('centro_custo_id', e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+              >
+                <option value="">Todos os centros</option>
+                {centrosCusto?.map(centro => (
+                  <option key={centro.id} value={centro.id}>
+                    {centro.codigo} - {centro.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Filtro por Tipo */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
@@ -135,8 +154,8 @@ export default function LancamentosPage() {
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
               >
                 <option value="">Todos os tipos</option>
-                <option value="receber">Receber</option>
-                <option value="pagar">Pagar</option>
+                <option value="receita">Receita</option>
+                <option value="despesa">Despesa</option>
               </select>
             </div>
 
@@ -233,12 +252,12 @@ export default function LancamentosPage() {
                         {lancamento.loja?.codigo}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {lancamento.loja?.cidade}
+                        {lancamento.loja?.nome}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTipoColor(lancamento.tipo)}`}>
-                        {lancamento.tipo === 'receber' ? 'Receber' : 'Pagar'}
+                        {lancamento.tipo === 'receita' ? 'Receita' : 'Despesa'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">

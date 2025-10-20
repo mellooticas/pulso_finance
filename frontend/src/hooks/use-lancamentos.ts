@@ -7,17 +7,22 @@ import { useAuth } from '@/contexts/auth-context'
 // Types para Lançamentos
 export interface Lancamento {
   id: string
-  loja_id: string
-  tipo: 'receber' | 'pagar'
-  plano_id: string
+  loja_id?: string
+  centro_custo_id?: string
+  tipo: 'receita' | 'despesa'
+  plano_id?: string
   descricao: string
-  historico: string
-  competencia: string
-  valor_total: number
-  origem: string
-  metadata: any
-  created_at: string
-  updated_at: string
+  historico?: string
+  competencia: string  // Data do lançamento no formato YYYY-MM-DD
+  valor: number
+  valor_total: number  // Valor total do lançamento
+  origem?: string
+  metadata?: any
+  status?: 'pendente' | 'pago' | 'cancelado'
+  data_vencimento?: string
+  observacoes?: string
+  created_at?: string
+  updated_at?: string
   
   // Relacionamentos
   loja?: {
@@ -30,6 +35,11 @@ export interface Lancamento {
     codigo: string
     nome: string
     categoria: string
+  }
+  centro_custo?: {
+    id: string
+    codigo: string
+    nome: string
   }
   parcelas?: Parcela[]
 }
@@ -54,12 +64,18 @@ export interface Parcela {
 
 export interface LancamentoFilters {
   loja_id?: string
-  tipo?: 'receber' | 'pagar'
+  centro_custo_id?: string
+  tipo?: 'receita' | 'despesa'
   plano_id?: string
+  dataInicio?: string
+  dataFim?: string
   data_inicio?: string
   data_fim?: string
-  status?: 'pendente' | 'pago' | 'atrasado'
+  status?: 'pendente' | 'pago' | 'cancelado'
   origem?: string
+  busca?: string
+  pagina?: number
+  limite?: number
 }
 
 // Hook principal para lançamentos
@@ -67,22 +83,35 @@ export function useLancamentos(filters: LancamentoFilters = {}) {
   return useQuery({
     queryKey: ['lancamentos', filters],
     queryFn: async () => {
+      // Primeira tentativa: query simples para verificar se a tabela existe
+      const { data: testData, error: testError } = await supabase
+        .from('lancamentos')
+        .select('*')
+        .limit(1)
+
+      if (testError) {
+        console.error('❌ Erro ao acessar tabela lancamentos:', testError)
+        // Se a tabela não existe, retornar array vazio
+        return []
+      }
+
+      // Se chegou aqui, a tabela existe. Vamos fazer a query completa
       let query = supabase
         .from('lancamentos')
         .select(`
           *,
-          loja:lojas!inner(id, codigo, nome),
-          plano_conta:plano_contas!inner(id, codigo, nome, categoria),
-          parcelas(
-            *,
-            forma_pagamento:formas_pagamento(id, nome)
-          )
+          loja:lojas(id, codigo, nome),
+          plano_conta:plano_contas(id, codigo, nome, categoria)
         `)
         .order('competencia', { ascending: false })
 
       // Aplicar filtros
       if (filters.loja_id) {
         query = query.eq('loja_id', filters.loja_id)
+      }
+      
+      if (filters.centro_custo_id) {
+        query = query.eq('centro_custo_id', filters.centro_custo_id)
       }
       
       if (filters.tipo) {
@@ -105,6 +134,7 @@ export function useLancamentos(filters: LancamentoFilters = {}) {
 
       if (error) {
         console.error('❌ Erro ao carregar lançamentos:', error)
+        console.error('Query details:', { filters })
         throw error
       }
 
@@ -118,26 +148,46 @@ export function useLancamentosStats(filters: LancamentoFilters = {}) {
   return useQuery({
     queryKey: ['lancamentos-stats', filters],
     queryFn: async () => {
+      // Verificar se a tabela existe primeiro
+      const { data: testData, error: testError } = await supabase
+        .from('lancamentos')
+        .select('tipo, valor')
+        .limit(1)
+
+      if (testError) {
+        console.error('❌ Erro ao acessar tabela lancamentos para stats:', testError)
+        return {
+          totalLancamentos: 0,
+          totalReceitas: 0,
+          totalDespesas: 0,
+          resultado: 0
+        }
+      }
+
       let query = supabase
         .from('lancamentos')
-        .select('tipo, valor_total, competencia')
+        .select('tipo, valor, competencia')
 
       // Aplicar mesmos filtros
       if (filters.loja_id) query = query.eq('loja_id', filters.loja_id)
+      if (filters.centro_custo_id) query = query.eq('centro_custo_id', filters.centro_custo_id)
       if (filters.tipo) query = query.eq('tipo', filters.tipo)
       if (filters.data_inicio) query = query.gte('competencia', filters.data_inicio)
       if (filters.data_fim) query = query.lte('competencia', filters.data_fim)
 
       const { data, error } = await query
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erro ao carregar stats:', error)
+        throw error
+      }
 
       // Calcular estatísticas
       const stats = data.reduce((acc, lancamento) => {
-        if (lancamento.tipo === 'receber') {
-          acc.totalReceitas += lancamento.valor_total
-        } else {
-          acc.totalDespesas += lancamento.valor_total
+        if (lancamento.tipo === 'receita') {
+          acc.totalReceitas += lancamento.valor || 0
+        } else if (lancamento.tipo === 'despesa') {
+          acc.totalDespesas += lancamento.valor || 0
         }
         acc.totalLancamentos++
         return acc
