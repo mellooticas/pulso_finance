@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { useLancamentos, useLancamentosStats } from '@/hooks/use-lancamentos'
+import { useState, useMemo } from 'react'
+import { useContasPagar, useContasPagarStats } from '@/hooks/use-contas-pagar-receber'
 import { useLojas } from '@/hooks/use-lojas'
+import { useCentrosCusto } from '@/hooks/use-centros-custo'
 import { Card } from '@/components/ui/card'
 import { 
   CalendarIcon,
@@ -19,7 +20,8 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   BanknotesIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  CubeIcon
 } from '@heroicons/react/24/outline'
 
 export default function ContasPagarPage() {
@@ -35,32 +37,45 @@ export default function ContasPagarPage() {
   })
   
   const [filtros, setFiltros] = useState({
-    loja: '',
+    loja_id: '',
+    centro_custo_id: '',
     status: '',
-    vencimento: '',
     busca: ''
   })
+
+  // 🔑 Hooks de dados - consultando PARCELAS por VENCIMENTO!
+  const { data: lojas } = useLojas()
+  const { data: centrosCusto } = useCentrosCusto()
   
-  const [paginacao, setPaginacao] = useState({
-    pagina: 1,
-    itensPorPagina: 20
+  const { data: contasPagar, isLoading } = useContasPagar({
+    vencimento_inicio: periodo.inicio,
+    vencimento_fim: periodo.fim,
+    loja_id: filtros.loja_id || undefined,
+    centro_custo_id: filtros.centro_custo_id || undefined,
+    status: filtros.status as any || undefined
+  })
+  
+  const { data: stats } = useContasPagarStats({
+    vencimento_inicio: periodo.inicio,
+    vencimento_fim: periodo.fim,
+    loja_id: filtros.loja_id || undefined,
+    centro_custo_id: filtros.centro_custo_id || undefined
   })
 
-  // Hooks de dados - filtrando apenas despesas
-  const { data: lojas } = useLojas()
-  const { data: contasPagar, isLoading } = useLancamentos({
-    data_inicio: periodo.inicio,
-    data_fim: periodo.fim,
-    tipo: 'despesa', // Apenas despesas
-    ...filtros,
-    pagina: paginacao.pagina,
-    limite: paginacao.itensPorPagina
-  })
-  const { data: stats } = useLancamentosStats({
-    data_inicio: periodo.inicio,
-    data_fim: periodo.fim,
-    tipo: 'despesa'
-  })
+  // Filtrar por busca no lado do cliente (descrição)
+  const contasFiltradas = useMemo(() => {
+    if (!contasPagar) return []
+    
+    return contasPagar.filter(parcela => {
+      // Filtro de busca por descrição
+      if (filtros.busca && parcela.lancamento) {
+        const busca = filtros.busca.toLowerCase()
+        const descricao = parcela.lancamento.descricao?.toLowerCase() || ''
+        return descricao.includes(busca)
+      }
+      return true
+    })
+  }, [contasPagar, filtros.busca])
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -87,6 +102,7 @@ export default function ContasPagarPage() {
       }
     }
     
+    // Status previsto - verificar se está vencido
     if (vencimento && vencimento < hoje) {
       return {
         badge: 'bg-red-100 text-red-800',
@@ -111,27 +127,10 @@ export default function ContasPagarPage() {
     return {
       badge: 'bg-blue-100 text-blue-800',
       icon: <ClockIcon className="h-4 w-4" />,
-      label: 'Pendente',
+      label: 'Previsto',
       color: 'text-blue-600'
     }
   }
-
-  // Calcular estatísticas
-  const contasVencidas = contasPagar?.filter(conta => {
-    const hoje = new Date()
-    const vencimento = conta.data_vencimento ? new Date(conta.data_vencimento) : null
-    return conta.status !== 'pago' && vencimento && vencimento < hoje
-  }) || []
-
-  const contasVencendoSemana = contasPagar?.filter(conta => {
-    const hoje = new Date()
-    const semanaQueVem = new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000)
-    const vencimento = conta.data_vencimento ? new Date(conta.data_vencimento) : null
-    return conta.status !== 'pago' && vencimento && vencimento >= hoje && vencimento <= semanaQueVem
-  }) || []
-
-  const valorVencido = contasVencidas.reduce((acc, conta) => acc + (conta.valor || 0), 0)
-  const valorVencendoSemana = contasVencendoSemana.reduce((acc, conta) => acc + (conta.valor || 0), 0)
 
   return (
     <div className="space-y-6">
@@ -167,8 +166,9 @@ export default function ContasPagarPage() {
             <div className="ml-4">
               <h3 className="text-sm font-medium text-gray-600">Total a Pagar</h3>
               <p className="text-2xl font-bold text-blue-600">
-                {formatCurrency(stats?.totalDespesas || 0)}
+                {formatCurrency(stats?.total || 0)}
               </p>
+              <p className="text-sm text-gray-500">{stats?.quantidadeTotal || 0} parcelas</p>
             </div>
           </div>
         </Card>
@@ -181,9 +181,9 @@ export default function ContasPagarPage() {
             <div className="ml-4">
               <h3 className="text-sm font-medium text-gray-600">Contas Vencidas</h3>
               <p className="text-2xl font-bold text-red-600">
-                {formatCurrency(valorVencido)}
+                {formatCurrency(stats?.totalVencido || 0)}
               </p>
-              <p className="text-sm text-gray-500">{contasVencidas.length} contas</p>
+              <p className="text-sm text-gray-500">{stats?.quantidadeVencida || 0} parcelas</p>
             </div>
           </div>
         </Card>
@@ -196,9 +196,9 @@ export default function ContasPagarPage() {
             <div className="ml-4">
               <h3 className="text-sm font-medium text-gray-600">Vence em 7 dias</h3>
               <p className="text-2xl font-bold text-yellow-600">
-                {formatCurrency(valorVencendoSemana)}
+                {formatCurrency(stats?.totalVencer7Dias || 0)}
               </p>
-              <p className="text-sm text-gray-500">{contasVencendoSemana.length} contas</p>
+              <p className="text-sm text-gray-500">{stats?.quantidadeVencer7Dias || 0} parcelas</p>
             </div>
           </div>
         </Card>
@@ -209,9 +209,12 @@ export default function ContasPagarPage() {
               <DocumentTextIcon className="h-8 w-8 text-gray-600" />
             </div>
             <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-600">Total de Contas</h3>
+              <h3 className="text-sm font-medium text-gray-600">Total de Parcelas</h3>
               <p className="text-2xl font-bold text-gray-900">
-                {contasPagar?.length || 0}
+                {stats?.quantidadeTotal || 0}
+              </p>
+              <p className="text-sm text-gray-500">
+                {stats?.quantidadePaga || 0} pagas / {stats?.quantidadePendente || 0} pendentes
               </p>
             </div>
           </div>
@@ -220,11 +223,11 @@ export default function ContasPagarPage() {
 
       {/* Filtros */}
       <Card className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <CalendarIcon className="h-4 w-4 inline mr-1" />
-              Data Início
+              Vencimento Início
             </label>
             <input
               type="date"
@@ -237,7 +240,7 @@ export default function ContasPagarPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <CalendarIcon className="h-4 w-4 inline mr-1" />
-              Data Fim
+              Vencimento Fim
             </label>
             <input
               type="date"
@@ -253,14 +256,33 @@ export default function ContasPagarPage() {
               Loja
             </label>
             <select
-              value={filtros.loja}
-              onChange={(e) => setFiltros(prev => ({ ...prev, loja: e.target.value }))}
+              value={filtros.loja_id}
+              onChange={(e) => setFiltros(prev => ({ ...prev, loja_id: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas</option>
               {lojas?.map(loja => (
                 <option key={loja.id} value={loja.id}>
                   {loja.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <CubeIcon className="h-4 w-4 inline mr-1" />
+              Centro de Custo
+            </label>
+            <select
+              value={filtros.centro_custo_id}
+              onChange={(e) => setFiltros(prev => ({ ...prev, centro_custo_id: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todos</option>
+              {centrosCusto?.map(centro => (
+                <option key={centro.id} value={centro.id}>
+                  {centro.nome}
                 </option>
               ))}
             </select>
@@ -277,9 +299,8 @@ export default function ContasPagarPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos</option>
-              <option value="pendente">Pendente</option>
+              <option value="previsto">Previsto</option>
               <option value="pago">Pago</option>
-              <option value="vencido">Vencido</option>
             </select>
           </div>
 
@@ -338,27 +359,28 @@ export default function ContasPagarPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {contasPagar?.map((conta, index) => {
-                  const statusInfo = getStatusInfo(conta.status || 'pendente', conta.data_vencimento)
+                {contasFiltradas?.map((parcela, index) => {
+                  const statusInfo = getStatusInfo(parcela.status || 'previsto', parcela.vencimento)
+                  const lancamento = parcela.lancamento
                   
                   return (
-                    <tr key={conta.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <tr key={parcela.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <div className="max-w-xs">
-                          <div className="font-medium">{conta.descricao}</div>
-                          {conta.observacoes && (
-                            <div className="text-gray-500 text-xs truncate">{conta.observacoes}</div>
+                          <div className="font-medium">{lancamento?.descricao || '-'}</div>
+                          {parcela.numero_parcela && (
+                            <div className="text-gray-500 text-xs">Parcela {parcela.numero_parcela}</div>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {conta.loja?.nome || '-'}
+                        {lancamento?.loja?.nome || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {conta.data_vencimento ? formatDate(conta.data_vencimento) : '-'}
+                        {parcela.vencimento ? formatDate(parcela.vencimento) : '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-red-600">
-                        {formatCurrency(conta.valor)}
+                        {formatCurrency(parcela.valor)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.badge}`}>
@@ -368,7 +390,7 @@ export default function ContasPagarPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
-                          {conta.status !== 'pago' && (
+                          {parcela.status !== 'pago' && (
                             <button className="text-green-600 hover:text-green-900" title="Marcar como pago">
                               <BanknotesIcon className="h-4 w-4" />
                             </button>
@@ -389,66 +411,20 @@ export default function ContasPagarPage() {
                 })}
               </tbody>
             </table>
+
+            {!contasFiltradas || contasFiltradas.length === 0 && (
+              <div className="text-center py-12">
+                <CreditCardIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhuma conta encontrada</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  {filtros.busca || filtros.loja_id || filtros.centro_custo_id || filtros.status 
+                    ? 'Tente ajustar os filtros' 
+                    : 'Não há contas a pagar no período selecionado'}
+                </p>
+              </div>
+            )}
           </div>
         )}
-
-        {/* Paginação */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              disabled={paginacao.pagina === 1}
-              onClick={() => setPaginacao(prev => ({ ...prev, pagina: prev.pagina - 1 }))}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => setPaginacao(prev => ({ ...prev, pagina: prev.pagina + 1 }))}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              Próximo
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Mostrando{' '}
-                <span className="font-medium">
-                  {(paginacao.pagina - 1) * paginacao.itensPorPagina + 1}
-                </span>{' '}
-                até{' '}
-                <span className="font-medium">
-                  {Math.min(paginacao.pagina * paginacao.itensPorPagina, contasPagar?.length || 0)}
-                </span>{' '}
-                de{' '}
-                <span className="font-medium">{contasPagar?.length || 0}</span>{' '}
-                resultados
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  disabled={paginacao.pagina === 1}
-                  onClick={() => setPaginacao(prev => ({ ...prev, pagina: prev.pagina - 1 }))}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Anterior
-                </button>
-                
-                <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                  {paginacao.pagina}
-                </span>
-                
-                <button
-                  onClick={() => setPaginacao(prev => ({ ...prev, pagina: prev.pagina + 1 }))}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  Próximo
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
       </Card>
     </div>
   )
