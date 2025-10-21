@@ -3,40 +3,46 @@
 import { useLancamentosStats, useLancamentosEvoluçaoMensal } from './use-lancamentos'
 import { useComparativoLojas } from './use-lojas'
 import { useDRE } from './use-dre'
+import { useFilters } from '@/contexts/filters-context'
 
 // Hook principal para dados do dashboard com dados reais
 export function useDashboardDataReal() {
-  // Período atual (mês atual)
-  const currentDate = new Date()
-  const currentMonth = currentDate.getMonth() + 1
-  const currentYear = currentDate.getFullYear()
-  
-  // Períodos para filtros de lançamentos
+  const { filters, periodo } = useFilters()
+
+  // Filtros derivados do contexto
   const filtroAtual = {
-    data_inicio: `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`,
-    data_fim: new Date(currentYear, currentMonth, 0).toISOString().split('T')[0]
+    data_inicio: filters.data_inicio,
+    data_fim: filters.data_fim,
+    loja_id: filters.loja_id || undefined,
+    centro_custo_id: filters.centro_custo_id || undefined,
   }
 
-  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1
-  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear
-  
+  // Mês anterior para variação (com base no período selecionado)
+  const baseInicio = new Date(filters.data_inicio)
+  const previousMonth = baseInicio.getMonth() === 0 ? 11 : baseInicio.getMonth() - 1
+  const previousYear = previousMonth === 11 ? baseInicio.getFullYear() - 1 : baseInicio.getFullYear()
+  const prevInicio = `${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-01`
+  const prevFim = new Date(previousYear, previousMonth + 1, 0).toISOString().split('T')[0]
   const filtroAnterior = {
-    data_inicio: `${previousYear}-${previousMonth.toString().padStart(2, '0')}-01`,
-    data_fim: new Date(previousYear, previousMonth, 0).toISOString().split('T')[0]
+    data_inicio: prevInicio,
+    data_fim: prevFim,
+    loja_id: filtroAtual.loja_id,
+    centro_custo_id: filtroAtual.centro_custo_id,
   }
 
-  // Períodos para hooks DRE e comparativo (formato diferente)
+  // Período para hooks DRE e comparativo
   const periodoAtual = {
-    inicio: `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`,
-    fim: new Date(currentYear, currentMonth, 0).toISOString().split('T')[0]
+    inicio: filters.data_inicio,
+    fim: filters.data_fim
   }
 
   // Hooks para dados
   const statsAtual = useLancamentosStats(filtroAtual)
   const statsAnterior = useLancamentosStats(filtroAnterior)
-  const evolucaoMensal = useLancamentosEvoluçaoMensal(currentYear)
+  const anoBase = new Date(filters.data_inicio).getFullYear()
+  const evolucaoMensal = useLancamentosEvoluçaoMensal(anoBase)
   const comparativoLojas = useComparativoLojas(periodoAtual)
-  const dreAtual = useDRE(periodoAtual)
+  const dreAtual = useDRE({ periodo: periodoAtual, lojaId: filters.loja_id || undefined, centroCustoId: filters.centro_custo_id || undefined })
 
   // Calcular valores financeiros corretos (entradas = receitas, saídas = despesas)
   const entradasAtual = statsAtual.data?.totalReceitas || 0

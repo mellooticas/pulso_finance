@@ -1,5 +1,7 @@
 import { DashboardSidebar } from '@/components/dashboard/sidebar'
 import { DashboardHeader } from '@/components/dashboard/header'
+import { FiltersProvider } from '@/contexts/filters-context'
+import { FiltersBar } from '@/components/dashboard/filters-bar'
 
 export default function DashboardLayout({
   children,
@@ -10,12 +12,19 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-slate-50">
       <DashboardSidebar />
       <div className="lg:pl-72">
-        <DashboardHeader />
-        <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {children}
+        <FiltersProvider>
+          <DashboardHeader />
+          <div className="py-4">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <FiltersBar />
+            </div>
           </div>
-        </main>
+          <main className="py-4">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              {children}
+            </div>
+          </main>
+        </FiltersProvider>
       </div>
     </div>
   )
