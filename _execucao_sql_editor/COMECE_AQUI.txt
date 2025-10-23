@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════════
+  🚀 EXECUÇÃO RÁPIDA VIA SQL EDITOR DO SUPABASE
+═══════════════════════════════════════════════════════════════
+
+📁 PASTA: _execucao_sql_editor/
+
+✅ JÁ EXECUTADO (via MCP):
+   - Limpeza do banco
+   - 10 Lojas
+   - 3 Contas raiz
+
+📋 FALTAM (execute NA ORDEM):
+
+   1. 01_plano_contas_lote_01.sql  ← COMECE AQUI
+   2. 02_plano_contas_lote_02.sql
+   3. 03_plano_contas_lote_03.sql
+   4. 04_plano_contas_lote_04.sql
+   5. 05_plano_contas_lote_05.sql
+   6. 06_plano_contas_lote_06.sql
+   7. 07_centros_custo.sql
+   8. 08_contas_financeiras.sql
+   9. 09_fornecedores_lote_001.sql
+      09_fornecedores_lote_002.sql
+  10. 10_classificar_fornecedores.sql
+   11. 11_transacionais_lote_001.sql … 11_transacionais_lote_201.sql  ← ARQUIVO GRANDE (lotes prontos)
+   11.1. 11b_atribuir_plano_transacionais.sql  ← Ajusta plano das receitas (idempotente)
+   12. 12_validacoes.sql             ← ÚLTIMO - mostra resumo
+
+═══════════════════════════════════════════════════════════════
+
+🎯 COMO EXECUTAR:
+
+   1. Abra SQL Editor do Supabase
+   2. Abra o primeiro arquivo (01_plano_contas_lote_01.sql)
+   3. Ctrl+A → Ctrl+C (copiar tudo)
+   4. Cole no SQL Editor
+   5. Clique "Run" ou Ctrl+Enter
+   6. Aguarde ✅ sucesso
+   7. Próximo arquivo (02, 03, 04...)
+
+═══════════════════════════════════════════════════════════════
+
+⏱️  TEMPO TOTAL: ~7-9 minutos
+
+📖 Veja README.md para mais detalhes
+
+🗑️  DELETE ESTA PASTA quando terminar!
+
+═══════════════════════════════════════════════════════════════
