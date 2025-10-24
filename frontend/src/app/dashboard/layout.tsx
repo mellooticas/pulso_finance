@@ -2,6 +2,7 @@ import { DashboardSidebar } from '@/components/dashboard/sidebar'
 import { DashboardHeader } from '@/components/dashboard/header'
 import { FiltersProvider } from '@/contexts/filters-context'
 import { FiltersBar } from '@/components/dashboard/filters-bar'
+import { FinancialAssistant } from '@/components/copilot/financial-assistant'
 
 export default function DashboardLayout({
   children,
@@ -24,6 +25,9 @@ export default function DashboardLayout({
               {children}
             </div>
           </main>
+          
+          {/* 🤖 Copiloto IA - disponível em todas as páginas */}
+          <FinancialAssistant />
         </FiltersProvider>
       </div>
     </div>

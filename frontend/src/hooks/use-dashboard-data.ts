@@ -75,28 +75,34 @@ export function useDashboardData() {
       const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1
       const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear
 
-      // Filtro por lojas do usuário
-      const userStores = profile.loja_ids || []
+      // ✅ Se não houver lojas específicas, buscar TODAS
+      const userStores = profile.loja_ids && profile.loja_ids.length > 0 ? profile.loja_ids : null
 
       // 1. KPIs do mês atual - USANDO ESTRUTURA CORRETA
-      const { data: currentMonthData, error: currentError } = await supabase
+      let currentQuery = supabase
         .from('lancamentos')
         .select(`
           valor_total,
           tipo,
           competencia,
           loja_id,
-          plano_contas!inner(codigo, nome, categoria)
+          planos_contas!inner(codigo, nome, categoria)
         `)
         .gte('competencia', `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`)
         .lt('competencia', `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-01`)
-        .in('loja_id', userStores)
         .eq('status_aprovacao', 'aprovado')
+      
+      // Aplicar filtro de loja SOMENTE se houver lojas específicas
+      if (userStores) {
+        currentQuery = currentQuery.in('loja_id', userStores)
+      }
+
+      const { data: currentMonthData, error: currentError } = await currentQuery
 
       if (currentError) throw currentError
 
       // 2. KPIs do mês anterior para comparação
-      const { data: previousMonthData, error: previousError } = await supabase
+      let previousQuery = supabase
         .from('lancamentos')
         .select(`
           valor_total,
@@ -105,8 +111,13 @@ export function useDashboardData() {
         `)
         .gte('competencia', `${previousYear}-${previousMonth.toString().padStart(2, '0')}-01`)
         .lt('competencia', `${previousYear}-${currentMonth.toString().padStart(2, '0')}-01`)
-        .in('loja_id', userStores)
         .eq('status_aprovacao', 'aprovado')
+      
+      if (userStores) {
+        previousQuery = previousQuery.in('loja_id', userStores)
+      }
+
+      const { data: previousMonthData, error: previousError } = await previousQuery
 
       if (previousError) throw previousError
 
@@ -133,18 +144,23 @@ export function useDashboardData() {
       const previousProfit = previousRevenue - previousExpense
 
       // 3. Fluxo de caixa (últimos 6 meses)
-      const { data: cashFlowRaw, error: cashFlowError } = await supabase
+      let cashFlowQuery = supabase
         .from('lancamentos')
         .select('valor_total, tipo, competencia')
         .gte('competencia', new Date(currentYear, currentMonth - 7, 1).toISOString().split('T')[0])
-        .in('loja_id', userStores)
         .eq('status_aprovacao', 'aprovado')
         .order('competencia', { ascending: true })
+      
+      if (userStores) {
+        cashFlowQuery = cashFlowQuery.in('loja_id', userStores)
+      }
+
+      const { data: cashFlowRaw, error: cashFlowError } = await cashFlowQuery
 
       if (cashFlowError) throw cashFlowError
 
       // 4. Últimos lançamentos
-      const { data: recentData, error: recentError } = await supabase
+      let recentQuery = supabase
         .from('lancamentos')
         .select(`
           id,
@@ -155,15 +171,20 @@ export function useDashboardData() {
           plano_contas(nome),
           lojas(nome)
         `)
-        .in('loja_id', userStores)
         .eq('status_aprovacao', 'aprovado')
         .order('created_at', { ascending: false })
         .limit(10)
+      
+      if (userStores) {
+        recentQuery = recentQuery.in('loja_id', userStores)
+      }
+
+      const { data: recentData, error: recentError } = await recentQuery
 
       if (recentError) throw recentError
 
       // 5. Análise por loja
-      const { data: storeData, error: storeError } = await supabase
+      let storeQuery = supabase
         .from('lancamentos')
         .select(`
           valor_total,
@@ -172,8 +193,13 @@ export function useDashboardData() {
           lojas(nome)
         `)
         .gte('competencia', `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`)
-        .in('loja_id', userStores)
         .eq('status_aprovacao', 'aprovado')
+      
+      if (userStores) {
+        storeQuery = storeQuery.in('loja_id', userStores)
+      }
+
+      const { data: storeData, error: storeError } = await storeQuery
 
       if (storeError) throw storeError
 
@@ -190,7 +216,7 @@ export function useDashboardData() {
           change: `${revenueVariation.type === 'increase' ? '+' : revenueVariation.type === 'decrease' ? '-' : ''}${revenueVariation.percentage.toFixed(1)}%`,
           changeType: revenueVariation.type,
           icon: 'TrendingUp',
-          description: `${getMonthName(currentDate)} de ${currentYear}`
+          description: `${getMonthName(currentMonth)} de ${currentYear}`
         },
         {
           name: 'Despesas do Mês',
@@ -199,7 +225,7 @@ export function useDashboardData() {
           change: `${expenseVariation.type === 'increase' ? '+' : expenseVariation.type === 'decrease' ? '-' : ''}${expenseVariation.percentage.toFixed(1)}%`,
           changeType: expenseVariation.type === 'increase' ? 'decrease' : 'increase', // Inverter para despesa
           icon: 'TrendingDown',
-          description: `${getMonthName(currentDate)} de ${currentYear}`
+          description: `${getMonthName(currentMonth)} de ${currentYear}`
         },
         {
           name: 'Lucro Líquido',
@@ -228,7 +254,7 @@ export function useDashboardData() {
       for (let i = 5; i >= 0; i--) {
         const date = new Date(currentYear, currentMonth - 1 - i, 1)
         last6Months.push({
-          month: getMonthName(date),
+          month: getMonthName(date.getMonth() + 1),
           year: date.getFullYear(),
           monthNum: date.getMonth() + 1
         })
@@ -296,8 +322,8 @@ export function useDashboardData() {
 
       // Processar categorias baseado no plano de contas
       const categoryTotals = currentMonthData?.reduce((acc, item) => {
-        if (item.plano_contas && Array.isArray(item.plano_contas) && item.plano_contas.length > 0 && item.tipo === 'pagar') {
-          const categoryName = item.plano_contas[0].categoria || item.plano_contas[0].nome
+        if (item.planos_contas && Array.isArray(item.planos_contas) && item.planos_contas.length > 0 && item.tipo === 'pagar') {
+          const categoryName = item.planos_contas[0].categoria || item.planos_contas[0].nome
           acc[categoryName] = (acc[categoryName] || 0) + item.valor_total
         }
         return acc
@@ -332,7 +358,7 @@ export function useDashboardData() {
       setRecentTransactions(processedTransactions)
 
       // Processar análise por loja
-      const storeAnalysisData = userStores.map(storeId => {
+      const storeAnalysisData = userStores ? userStores.map(storeId => {
         const storeTransactions = storeData?.filter(item => item.loja_id === storeId) || []
         const storeName = (storeTransactions.length > 0 && Array.isArray(storeTransactions[0].lojas) && storeTransactions[0].lojas.length > 0) 
           ? storeTransactions[0].lojas[0].nome 
@@ -351,7 +377,7 @@ export function useDashboardData() {
           lucro: profit,
           margem: margin
         }
-      }).sort((a, b) => b.lucro - a.lucro)
+      }).sort((a, b) => b.lucro - a.lucro) : []
 
       setStoreAnalysis(storeAnalysisData)
 

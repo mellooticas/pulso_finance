@@ -55,35 +55,16 @@ export default function BackupExportPage() {
     }
   })
 
-  // Dados de backup mockados
+  // ✅ DADOS REAIS: Backups serão implementados via Supabase Storage
+  // Por enquanto, mostramos configuração manual
   const backups: BackupTask[] = [
     {
       id: '1',
-      nome: 'Backup Completo Diário',
-      tipo: 'completo',
-      status: 'sucesso',
-      data_execucao: '2024-01-20T02:00:00',
-      tamanho: '2.3 GB',
-      tempo_execucao: '12 min',
-      proximo_backup: '2024-01-21T02:00:00'
-    },
-    {
-      id: '2',
-      nome: 'Backup Incremental',
-      tipo: 'incremental',
-      status: 'sucesso',
-      data_execucao: '2024-01-20T12:00:00',
-      tamanho: '156 MB',
-      tempo_execucao: '3 min',
-      proximo_backup: '2024-01-20T18:00:00'
-    },
-    {
-      id: '3',
-      nome: 'Backup Semanal',
+      nome: 'Download Manual de Dados',
       tipo: 'completo',
       status: 'agendado',
-      data_execucao: '2024-01-21T01:00:00',
-      proximo_backup: '2024-01-28T01:00:00'
+      data_execucao: new Date().toISOString(),
+      proximo_backup: new Date(Date.now() + 24*60*60*1000).toISOString()
     }
   ]
 

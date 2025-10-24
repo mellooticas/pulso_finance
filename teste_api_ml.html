@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste API ML - Pulso Finance</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; margin-bottom: 30px; }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.ok { background: #4CAF50; color: white; }
+        .status.error { background: #f44336; color: white; }
+        .status.waiting { background: #FF9800; color: white; }
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #0b7dda; }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+        }
+        .metric {
+            display: inline-block;
+            margin: 10px 15px 10px 0;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste API ML - Pulso Finance</h1>
+        
+        <!-- Teste 1: Health Check -->
+        <div class="test-section">
+            <h2>1. Health Check <span id="status1" class="status waiting">Aguardando</span></h2>
+            <button onclick="testHealth()">Testar Health Check</button>
+            <pre id="result1">Clique no botão para testar...</pre>
+        </div>
+
+        <!-- Teste 2: Listar Lojas -->
+        <div class="test-section">
+            <h2>2. Listar Lojas com Dados <span id="status2" class="status waiting">Aguardando</span></h2>
+            <button onclick="testLojas()">Buscar Lojas</button>
+            <pre id="result2">Clique no botão para testar...</pre>
+        </div>
+
+        <!-- Teste 3: Previsão ML -->
+        <div class="test-section">
+            <h2>3. Previsão ML (Loja Mauá) <span id="status3" class="status waiting">Aguardando</span></h2>
+            <button onclick="testPrevisao()">Gerar Previsão</button>
+            <div id="metrics3"></div>
+            <pre id="result3">Clique no botão para testar...</pre>
+        </div>
+
+        <!-- Teste 4: CORS -->
+        <div class="test-section">
+            <h2>4. Teste de CORS <span id="status4" class="status waiting">Aguardando</span></h2>
+            <button onclick="testCORS()">Testar CORS</button>
+            <pre id="result4">Clique no botão para testar...</pre>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const LOJA_MAUA_ID = 'bde8c647-89f8-4a02-8c19-77bc47ee7aaf';
+
+        async function testHealth() {
+            const statusEl = document.getElementById('status1');
+            const resultEl = document.getElementById('result1');
+            
+            statusEl.className = 'status waiting';
+            statusEl.textContent = 'Testando...';
+            resultEl.textContent = 'Enviando requisição...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/ml/health`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusEl.className = 'status ok';
+                    statusEl.textContent = 'OK';
+                    resultEl.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'ERRO';
+                    resultEl.textContent = `Status: ${response.status}\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'ERRO';
+                resultEl.textContent = `Erro de conexão: ${error.message}\n\nVerifique se a API está rodando em http://localhost:8000`;
+            }
+        }
+
+        async function testLojas() {
+            const statusEl = document.getElementById('status2');
+            const resultEl = document.getElementById('result2');
+            
+            statusEl.className = 'status waiting';
+            statusEl.textContent = 'Testando...';
+            resultEl.textContent = 'Buscando lojas do Supabase...';
+
+            try {
+                // Simulando a chamada que o hook useLojasComDados faz
+                const SUPABASE_URL = 'https://fxsgphqzazcbjcyfqeyg.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2dwaHF6YXpjYmpjeWZxZXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0Njk1NDgsImV4cCI6MjA3NjA0NTU0OH0.G8iU9l5o4myYEPAFD4XB_fjDJYiIwYRXHifsDdwSFK4';
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/lojas?ativa=eq.true&select=id,nome,razao_social,cnpj,ativa&order=nome`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                const lojas = await response.json();
+
+                if (response.ok) {
+                    statusEl.className = 'status ok';
+                    statusEl.textContent = `${lojas.length} lojas encontradas`;
+                    resultEl.textContent = `Total de lojas: ${lojas.length}\n\n${JSON.stringify(lojas, null, 2)}`;
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'ERRO';
+                    resultEl.textContent = `Status: ${response.status}\n${JSON.stringify(lojas, null, 2)}`;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'ERRO';
+                resultEl.textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        async function testPrevisao() {
+            const statusEl = document.getElementById('status3');
+            const resultEl = document.getElementById('result3');
+            const metricsEl = document.getElementById('metrics3');
+            
+            statusEl.className = 'status waiting';
+            statusEl.textContent = 'Gerando previsão...';
+            resultEl.textContent = 'Aguarde, o Prophet está treinando o modelo (pode levar 10-20s)...';
+            metricsEl.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_URL}/api/ml/forecast/receitas`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        loja_id: LOJA_MAUA_ID,
+                        periods: 30,
+                        tipo: 'receitas'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusEl.className = 'status ok';
+                    statusEl.textContent = 'Previsão gerada!';
+                    
+                    metricsEl.innerHTML = `
+                        <div class="metric">📊 Dias históricos: <strong>${data.historical_days}</strong></div>
+                        <div class="metric">📅 Dias previstos: <strong>${data.forecast_days}</strong></div>
+                        <div class="metric">📈 Tendência: <strong>${data.trend.trend_direction}</strong></div>
+                        <div class="metric">📉 Variação: <strong>${data.trend.trend_change_percent.toFixed(2)}%</strong></div>
+                    `;
+                    
+                    resultEl.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'ERRO';
+                    resultEl.textContent = `Status: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'ERRO';
+                resultEl.textContent = `Erro de conexão: ${error.message}\n\nVerifique se a API está rodando em http://localhost:8000`;
+            }
+        }
+
+        async function testCORS() {
+            const statusEl = document.getElementById('status4');
+            const resultEl = document.getElementById('result4');
+            
+            statusEl.className = 'status waiting';
+            statusEl.textContent = 'Testando...';
+            resultEl.textContent = 'Verificando configuração CORS...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/ml/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': 'http://localhost:3000'
+                    }
+                });
+
+                const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+                
+                if (corsHeader) {
+                    statusEl.className = 'status ok';
+                    statusEl.textContent = 'OK';
+                    resultEl.textContent = `✅ CORS configurado corretamente!\n\nAccess-Control-Allow-Origin: ${corsHeader}\n\nO frontend em http://localhost:3000 pode acessar a API.`;
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'ERRO';
+                    resultEl.textContent = `❌ Header CORS não encontrado!\n\nA API deve retornar: Access-Control-Allow-Origin: http://localhost:3000`;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'ERRO';
+                resultEl.textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        // Executar teste automático ao carregar
+        window.addEventListener('load', () => {
+            console.log('🧪 Página de teste carregada!');
+            console.log('Clique nos botões para testar a integração Frontend → API ML');
+        });
+    </script>
+</body>
+</html>

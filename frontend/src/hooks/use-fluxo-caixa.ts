@@ -33,6 +33,12 @@ export interface FluxoCaixaData {
   contas: SaldoConta[]
   dias_caixa_disponivel: number
   media_saidas_diaria: number
+  dias_anteriores?: Array<{
+    data: string
+    entradas: number
+    saidas: number
+    saldo_acumulado: number
+  }>
 }
 
 // Hook para dados de fluxo de caixa
@@ -150,6 +156,48 @@ export function useFluxoCaixa(filters: FluxoCaixaFilters) {
         saidas_periodo: 0    // TODO: Implementar por conta se necessário
       }))
 
+      // 7. Calcular evolução dos últimos 7 dias para gráficos
+      const diasAnteriores = []
+      let saldoAcumulado = saldoTotalAtual
+      
+      for (let i = 0; i < 7; i++) {
+        const data = new Date()
+        data.setDate(data.getDate() - i)
+        const dataStr = data.toISOString().split('T')[0]
+        
+        // Buscar entradas e saídas desse dia
+        const { data: lancamentoDia } = await supabase
+          .from('lancamentos')
+          .select(`
+            tipo,
+            valor_total,
+            parcelas!inner(valor_pago, status, data_pagamento)
+          `)
+          .eq('competencia', dataStr)
+          .eq('parcelas.status', 'pago')
+        
+        let entradasDia = 0
+        let saidasDia = 0
+        
+        lancamentoDia?.forEach(lanc => {
+          lanc.parcelas?.forEach(p => {
+            if (p.valor_pago) {
+              if (lanc.tipo === 'receber') entradasDia += p.valor_pago
+              else saidasDia += p.valor_pago
+            }
+          })
+        })
+        
+        diasAnteriores.unshift({
+          data: dataStr,
+          entradas: entradasDia,
+          saidas: saidasDia,
+          saldo_acumulado: saldoAcumulado
+        })
+        
+        saldoAcumulado -= (entradasDia - saidasDia)
+      }
+
       const fluxoCaixa: FluxoCaixaData = {
         saldo_total_inicial: saldoTotalInicial,
         saldo_total_atual: saldoTotalAtual,
@@ -158,7 +206,8 @@ export function useFluxoCaixa(filters: FluxoCaixaFilters) {
         resultado_periodo: entradasPeriodo - saidasPeriodo,
         contas: contasComSaldo,
         dias_caixa_disponivel: Math.round(diasCaixaDisponivel),
-        media_saidas_diaria: mediaSaidasDiaria
+        media_saidas_diaria: mediaSaidasDiaria,
+        dias_anteriores: diasAnteriores
       }
 
       return fluxoCaixa

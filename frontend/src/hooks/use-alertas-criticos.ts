@@ -46,10 +46,10 @@ export function useAlertasCriticos() {
             tipo,
             descricao,
             loja:lojas(id, nome),
-            plano_conta:plano_contas(id, nome)
+            plano_conta:planos_contas(id, nome)
           )
         `)
-        .eq('lancamento.tipo', 'despesa')
+        .eq('lancamento.tipo', 'pagar')
         .eq('status', 'previsto')
         .lt('vencimento', hojeStr)
         .order('vencimento', { ascending: true })
@@ -66,10 +66,10 @@ export function useAlertasCriticos() {
             tipo,
             descricao,
             loja:lojas(id, nome),
-            plano_conta:plano_contas(id, nome)
+            plano_conta:planos_contas(id, nome)
           )
         `)
-        .eq('lancamento.tipo', 'despesa')
+        .eq('lancamento.tipo', 'pagar')
         .eq('status', 'previsto')
         .gte('vencimento', hojeStr)
         .lt('vencimento', amanhaStr)
@@ -89,7 +89,7 @@ export function useAlertasCriticos() {
             loja:lojas(id, nome)
           )
         `)
-        .eq('lancamento.tipo', 'despesa')
+        .eq('lancamento.tipo', 'pagar')
         .eq('status', 'previsto')
         .gte('vencimento', amanhaStr)
         .lte('vencimento', seteDiasStr)
@@ -178,7 +178,7 @@ export function useAcoesPrioritarias() {
             loja:lojas(id, nome)
           )
         `)
-        .eq('lancamento.tipo', 'despesa')
+        .eq('lancamento.tipo', 'pagar')
         .eq('status', 'previsto')
         .lt('vencimento', hojeStr)
         .order('valor', { ascending: false })
@@ -249,7 +249,7 @@ export function useProximosVencimentos(dias: number = 7) {
             loja:lojas(id, nome)
           )
         `)
-        .eq('lancamento.tipo', 'despesa')
+        .eq('lancamento.tipo', 'pagar')
         .eq('status', 'previsto')
         .gte('vencimento', amanhaStr)
         .lte('vencimento', futuroStr)
