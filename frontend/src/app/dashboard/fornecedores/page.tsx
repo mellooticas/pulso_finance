@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
+import { useFornecedores } from '@/hooks/useRealData'
 import { 
   PlusIcon,
   MagnifyingGlassIcon,
@@ -16,27 +17,6 @@ import {
   DocumentTextIcon
 } from '@heroicons/react/24/outline'
 
-// Interface temporária - será substituída por hook real
-interface Fornecedor {
-  id: string
-  codigo: string
-  nome: string
-  nome_fantasia?: string
-  cnpj?: string
-  cpf?: string
-  tipo: 'juridica' | 'fisica'
-  email?: string
-  telefone?: string
-  endereco?: string
-  cidade?: string
-  estado?: string
-  cep?: string
-  ativo: boolean
-  observacoes?: string
-  created_at: string
-  updated_at: string
-}
-
 export default function FornecedoresPage() {
   const [filtros, setFiltros] = useState({
     busca: '',
@@ -47,53 +27,15 @@ export default function FornecedoresPage() {
 
   const [showModal, setShowModal] = useState(false)
 
-  // Dados mockados temporariamente - será substituído por hook real
-  const fornecedores: Fornecedor[] = [
-    {
-      id: '1',
-      codigo: 'FORN001',
-      nome: 'Distribuidora ABC Ltda',
-      nome_fantasia: 'ABC Distribuidora',
-      cnpj: '12.345.678/0001-90',
-      cpf: undefined,
-      tipo: 'juridica',
-      email: 'contato@abcdist.com.br',
-      telefone: '(11) 98765-4321',
-      endereco: 'Rua das Flores, 123',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '01234-567',
-      ativo: true,
-      observacoes: 'Fornecedor principal de produtos',
-      created_at: '2024-01-15',
-      updated_at: '2024-01-15'
-    },
-    {
-      id: '2',
-      codigo: 'FORN002',
-      nome: 'João Silva Serviços',
-      nome_fantasia: undefined,
-      cnpj: undefined,
-      cpf: '123.456.789-00',
-      tipo: 'fisica',
-      email: 'joao@email.com',
-      telefone: '(11) 91234-5678',
-      endereco: 'Av. Central, 456',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '05678-901',
-      ativo: true,
-      observacoes: 'Prestador de serviços de manutenção',
-      created_at: '2024-01-20',
-      updated_at: '2024-01-20'
-    }
-  ]
+  // ✅ DADOS REAIS DO SUPABASE
+  const { data: fornecedoresData = [], isLoading, error } = useFornecedores()
+  const fornecedores = fornecedoresData || []
 
   // Filtrar fornecedores
-  const fornecedoresFiltrados = fornecedores.filter((fornecedor) => {
+  const fornecedoresFiltrados = fornecedores.filter((fornecedor: any) => {
     const matchBusca = !filtros.busca || 
-      fornecedor.nome.toLowerCase().includes(filtros.busca.toLowerCase()) ||
-      fornecedor.codigo.toLowerCase().includes(filtros.busca.toLowerCase()) ||
+      fornecedor.nome?.toLowerCase().includes(filtros.busca.toLowerCase()) ||
+      fornecedor.codigo?.toLowerCase().includes(filtros.busca.toLowerCase()) ||
       fornecedor.nome_fantasia?.toLowerCase().includes(filtros.busca.toLowerCase())
     
     const matchTipo = !filtros.tipo || fornecedor.tipo === filtros.tipo
@@ -105,7 +47,7 @@ export default function FornecedoresPage() {
   })
 
   // Cidades únicas para o filtro
-  const cidades = [...new Set(fornecedores.map(f => f.cidade).filter(Boolean))]
+  const cidades = [...new Set(fornecedores.map((f: any) => f.cidade).filter(Boolean))]
 
   const limparFiltros = () => {
     setFiltros({
@@ -116,7 +58,7 @@ export default function FornecedoresPage() {
     })
   }
 
-  const formatDocument = (fornecedor: Fornecedor) => {
+  const formatDocument = (fornecedor: any) => {
     if (fornecedor.tipo === 'juridica' && fornecedor.cnpj) {
       return `CNPJ: ${fornecedor.cnpj}`
     }
@@ -124,6 +66,28 @@ export default function FornecedoresPage() {
       return `CPF: ${fornecedor.cpf}`
     }
     return '-'
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="text-lg font-semibold">Carregando fornecedores...</div>
+          <div className="text-sm text-gray-600 mt-2">Aguarde</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center text-red-600">
+          <div className="text-lg font-semibold">Erro ao carregar fornecedores</div>
+          <div className="text-sm mt-2">{String(error)}</div>
+        </div>
+      </div>
+    )
   }
 
   return (

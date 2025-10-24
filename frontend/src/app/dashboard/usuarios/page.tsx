@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
+import { supabase } from '@/lib/supabase'
+import { useQuery } from '@tanstack/react-query'
 import { 
   PlusIcon,
   MagnifyingGlassIcon,
@@ -16,16 +18,25 @@ import {
   FunnelIcon
 } from '@heroicons/react/24/outline'
 
-// Interface temporária - será conectada com hook real
-interface Usuario {
-  id: string
-  nome: string
-  email: string
-  papel: 'admin' | 'gerencial' | 'financeiro' | 'operacional'
-  ativo: boolean
-  ultimo_acesso?: string
-  created_at: string
-  updated_at: string
+// Hook para buscar usuários reais do Supabase Auth
+function useUsuarios() {
+  return useQuery({
+    queryKey: ['usuarios-auth'],
+    queryFn: async () => {
+      // Buscar usuários da tabela auth.users (requer permissões de admin)
+      const { data: { users }, error } = await supabase.auth.admin.listUsers()
+      
+      if (error) {
+        console.error('Erro ao listar usuários:', error)
+        // Fallback: buscar do próprio usuário logado
+        const { data: { user } } = await supabase.auth.getUser()
+        return user ? [user] : []
+      }
+      
+      return users || []
+    },
+    staleTime: 5 * 60 * 1000,
+  })
 }
 
 export default function UsuariosPage() {
@@ -37,49 +48,18 @@ export default function UsuariosPage() {
 
   const [showModal, setShowModal] = useState(false)
 
-  // Dados mockados temporariamente
-  const usuarios: Usuario[] = [
-    {
-      id: '1',
-      nome: 'Administrador Sistema',
-      email: 'admin@pulsofinance.com',
-      papel: 'admin',
-      ativo: true,
-      ultimo_acesso: '2024-01-20T10:30:00',
-      created_at: '2024-01-01',
-      updated_at: '2024-01-20'
-    },
-    {
-      id: '2', 
-      nome: 'Gerente Financeiro',
-      email: 'financeiro@empresa.com',
-      papel: 'gerencial',
-      ativo: true,
-      ultimo_acesso: '2024-01-19T16:45:00',
-      created_at: '2024-01-10',
-      updated_at: '2024-01-19'
-    },
-    {
-      id: '3',
-      nome: 'Analista Contábil',
-      email: 'analista@empresa.com', 
-      papel: 'financeiro',
-      ativo: true,
-      ultimo_acesso: '2024-01-18T14:20:00',
-      created_at: '2024-01-15',
-      updated_at: '2024-01-18'
-    }
-  ]
+  // ✅ DADOS REAIS DO SUPABASE AUTH
+  const { data: usuarios = [], isLoading, error } = useUsuarios()
 
   // Filtrar usuários
-  const usuariosFiltrados = usuarios.filter((usuario) => {
+  const usuariosFiltrados = usuarios.filter((usuario: any) => {
     const matchBusca = !filtros.busca || 
-      usuario.nome.toLowerCase().includes(filtros.busca.toLowerCase()) ||
-      usuario.email.toLowerCase().includes(filtros.busca.toLowerCase())
+      usuario.email?.toLowerCase().includes(filtros.busca.toLowerCase()) ||
+      usuario.user_metadata?.nome?.toLowerCase().includes(filtros.busca.toLowerCase())
     
-    const matchPapel = !filtros.papel || usuario.papel === filtros.papel
+    const matchPapel = !filtros.papel || usuario.user_metadata?.papel === filtros.papel
     const matchStatus = filtros.status === 'todos' || 
-      (filtros.status === 'ativo' ? usuario.ativo : !usuario.ativo)
+      (filtros.status === 'ativo' ? !usuario.banned_until : !!usuario.banned_until)
 
     return matchBusca && matchPapel && matchStatus
   })
@@ -101,12 +81,35 @@ export default function UsuariosPage() {
       financeiro: 'Financeiro', 
       operacional: 'Operacional'
     }
-    return labels[papel as keyof typeof labels] || papel
+    return labels[papel as keyof typeof labels] || 'Usuário'
   }
 
   const formatDateTime = (dateString?: string) => {
     if (!dateString) return '-'
     return new Date(dateString).toLocaleString('pt-BR')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="text-lg font-semibold">Carregando usuários...</div>
+          <div className="text-sm text-gray-600 mt-2">Aguarde</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center text-orange-600">
+          <div className="text-lg font-semibold">Acesso limitado</div>
+          <div className="text-sm mt-2">Você só pode visualizar seu próprio usuário</div>
+          <div className="text-xs text-gray-600 mt-2">Usuários: {usuarios.length}</div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -149,7 +152,7 @@ export default function UsuariosPage() {
         <Card className="p-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {usuarios.filter(u => u.ativo).length}
+              {usuarios.filter((u: any) => !u.banned_until).length}
             </div>
             <div className="text-sm text-gray-600">Usuários Ativos</div>
           </div>
@@ -158,7 +161,7 @@ export default function UsuariosPage() {
         <Card className="p-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-red-600">
-              {usuarios.filter(u => u.papel === 'admin').length}
+              {usuarios.filter((u: any) => u.user_metadata?.papel === 'admin').length}
             </div>
             <div className="text-sm text-gray-600">Administradores</div>
           </div>
@@ -167,7 +170,7 @@ export default function UsuariosPage() {
         <Card className="p-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">
-              {usuarios.filter(u => u.ultimo_acesso && new Date(u.ultimo_acesso) > new Date(Date.now() - 7*24*60*60*1000)).length}
+              {usuarios.filter((u: any) => u.last_sign_in_at && new Date(u.last_sign_in_at) > new Date(Date.now() - 7*24*60*60*1000)).length}
             </div>
             <div className="text-sm text-gray-600">Ativos 7 dias</div>
           </div>
@@ -245,7 +248,7 @@ export default function UsuariosPage() {
               <p className="text-sm">Ajuste os filtros ou adicione um novo usuário</p>
             </div>
           ) : (
-            usuariosFiltrados.map((usuario) => (
+            usuariosFiltrados.map((usuario: any) => (
               <div key={usuario.id} className="px-6 py-4 hover:bg-gray-50">
                 <div className="grid grid-cols-12 gap-4 items-center">
                   <div className="col-span-3">
@@ -253,7 +256,7 @@ export default function UsuariosPage() {
                       <UserGroupIcon className="w-5 h-5 mr-3 text-blue-600" />
                       <div>
                         <span className="text-sm font-medium text-gray-900 block">
-                          {usuario.nome}
+                          {usuario.user_metadata?.nome || usuario.email?.split('@')[0] || 'Usuário'}
                         </span>
                         <span className="text-xs text-gray-500">
                           Criado em {formatDateTime(usuario.created_at).split(' ')[0]}
@@ -274,8 +277,8 @@ export default function UsuariosPage() {
                   <div className="col-span-2">
                     <div className="flex items-center">
                       <ShieldCheckIcon className="w-4 h-4 mr-2 text-gray-400" />
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getPapelColor(usuario.papel)}`}>
-                        {getPapelLabel(usuario.papel)}
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getPapelColor(usuario.user_metadata?.papel || 'operacional')}`}>
+                        {getPapelLabel(usuario.user_metadata?.papel || 'operacional')}
                       </span>
                     </div>
                   </div>
@@ -283,17 +286,17 @@ export default function UsuariosPage() {
                   <div className="col-span-2">
                     <div className="flex items-center text-sm text-gray-600">
                       <CalendarIcon className="w-4 h-4 mr-2" />
-                      <span>{formatDateTime(usuario.ultimo_acesso)}</span>
+                      <span>{formatDateTime(usuario.last_sign_in_at)}</span>
                     </div>
                   </div>
                   
                   <div className="col-span-1">
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      usuario.ativo 
+                      !usuario.banned_until 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {usuario.ativo ? 'Ativo' : 'Inativo'}
+                      {!usuario.banned_until ? 'Ativo' : 'Inativo'}
                     </span>
                   </div>
                   

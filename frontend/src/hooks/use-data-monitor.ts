@@ -34,7 +34,7 @@ export function useDataMonitor() {
       
       // Verificar plano de contas
       const { data: planoContas, error: planoError } = await supabase
-        .from('plano_contas')
+        .from('planos_contas')
         .select('id', { count: 'exact' })
         .limit(1)
       
@@ -45,11 +45,8 @@ export function useDataMonitor() {
         .eq('origem', 'migracao_yampa')
         .limit(1)
       
-      // Verificar usuários
-      const { data: usuarios, error: usuariosError } = await supabase
-        .from('usuarios')
-        .select('id', { count: 'exact' })
-        .limit(1)
+      // Verificar usuários AUTH (não tem tabela usuarios)
+      const { data: { user }, error: usuariosError } = await supabase.auth.getUser()
 
       setStatus({
         lojas: {
@@ -68,8 +65,8 @@ export function useDataMonitor() {
           error: lancamentosError?.message
         },
         usuarios: {
-          count: usuarios?.length || 0,
-          loaded: !usuariosError && (usuarios?.length || 0) > 0,
+          count: user ? 1 : 0,
+          loaded: !usuariosError && !!user,
           error: usuariosError?.message
         }
       })
@@ -77,7 +74,7 @@ export function useDataMonitor() {
       setLastCheck(new Date())
 
       // Log do progresso
-      const totalLoaded = [lojas, planoContas, lancamentos, usuarios].filter(d => d && d.length > 0).length
+      const totalLoaded = [lojas, planoContas, lancamentos, user ? [user] : null].filter(d => d && d.length > 0).length
       console.log(`📊 Dados carregados: ${totalLoaded}/4 tabelas`)
       
       if (totalLoaded === 4) {

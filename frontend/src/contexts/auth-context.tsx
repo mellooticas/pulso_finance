@@ -34,38 +34,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Tentar buscar perfil por ID primeiro
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (error) {
-        console.error('Error fetching profile by ID:', error)
-        
-        // Se erro 406 ou PGRST116, tentar buscar por email do usuário autenticado
-        if (error.code === 'PGRST116' || error.message.includes('406')) {
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user?.email) {
-            const { data: profileByEmail, error: emailError } = await supabase
-              .from('usuarios')
-              .select('*')
-              .eq('email', user.email)
-              .single()
-            
-            if (emailError) {
-              console.error('Error fetching profile by email:', emailError)
-              return null
-            }
-            
-            return profileByEmail as UserProfile
-          }
-        }
+      // ✅ Usar dados do Auth ao invés de tabela usuarios
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      if (error || !user) {
+        console.error('Error fetching auth user:', error)
         return null
       }
 
-      return data as UserProfile
+      // Mapear user do Auth para UserProfile
+      return {
+        id: user.id,
+        email: user.email || '',
+        nome: user.user_metadata?.nome || user.email?.split('@')[0] || 'Usuário',
+        papel: user.user_metadata?.papel || 'operacional',
+        ativo: true,
+        loja_ids: user.user_metadata?.loja_ids || [],
+        ultimo_acesso: new Date().toISOString(),
+        created_at: user.created_at,
+        updated_at: user.updated_at || user.created_at,
+        configuracoes: user.user_metadata?.configuracoes || {}
+      } as UserProfile
     } catch (error) {
       console.error('Error in fetchProfile:', error)
       return null
@@ -100,47 +89,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (data.user) {
         console.log('Usuário autenticado, buscando perfil...')
-        const profileData = await fetchProfile(data.user.id)
+        let profileData = await fetchProfile(data.user.id)
         console.log('Profile data:', profileData)
         
         if (!profileData) {
-          console.log('Perfil não encontrado, buscando por email...')
-          // Se não encontrar perfil, tentar buscar por email
-          const { data: userByEmail, error: emailError } = await supabase
-            .from('usuarios')
-            .select('*')
-            .eq('email', email)
-            .single()
-
-          if (emailError || !userByEmail) {
-            await supabase.auth.signOut()
-            return { error: 'Usuário não encontrado no sistema. Contate o administrador.' }
-          }
-
-          // Atualizar o ID do usuário com o ID do Auth
-          const { error: updateError } = await supabase
-            .from('usuarios')
-            .update({ id: data.user.id })
-            .eq('email', email)
-
-          if (updateError) {
-            console.error('Erro ao atualizar ID do usuário:', updateError)
-          }
-
-          setProfile(userByEmail)
-        } else {
-          if (!profileData.ativo) {
-            await supabase.auth.signOut()
-            return { error: 'Usuário inativo. Contate o administrador.' }
-          }
-          setProfile(profileData)
+          console.log('Erro ao obter perfil do usuário')
+          await supabase.auth.signOut()
+          return { error: 'Erro ao criar perfil do usuário' }
         }
 
-        // Update last access
-        await supabase
-          .from('usuarios')
-          .update({ ultimo_acesso: new Date().toISOString() })
-          .eq('id', data.user.id)
+        if (!profileData.ativo) {
+          await supabase.auth.signOut()
+          return { error: 'Usuário inativo. Contate o administrador.' }
+        }
+        
+        setProfile(profileData)
 
         console.log('Login realizado com sucesso, retornando { success: true }')
         // SUCESSO: Login realizado com sucesso

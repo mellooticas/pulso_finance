@@ -40,6 +40,7 @@ const navigation = [
       { name: 'Lançamentos', href: '/dashboard/lancamentos', icon: DocumentTextIcon },
       { name: 'Contas a Pagar', href: '/dashboard/contas-pagar', icon: CreditCardIcon },
       { name: 'Contas a Receber', href: '/dashboard/contas-receber', icon: BanknotesIcon },
+      { name: '🏦 Conciliação Bancária', href: '/dashboard/conciliacao', icon: DocumentDuplicateIcon },
       { name: 'Plano de Contas', href: '/dashboard/plano-contas', icon: FolderIcon },
       { name: 'Centros de Custo', href: '/dashboard/centros-custo', icon: TagIcon },
     ]
@@ -54,6 +55,7 @@ const navigation = [
     children: [
       { name: 'DRE', href: '/dashboard/dre', icon: ChartBarIcon },
       { name: 'Fluxo de Caixa', href: '/dashboard/fluxo-caixa', icon: PresentationChartLineIcon },
+      { name: '🔮 Previsões ML', href: '/dashboard/previsoes', icon: ArrowTrendingUpIcon },
       { name: 'Análise Financeira', href: '/dashboard/analise', icon: ChartPieIcon },
       { name: 'Balancete', href: '/dashboard/balancete', icon: CalculatorIcon },
       { name: 'Comparativos', href: '/dashboard/comparativos', icon: ArrowTrendingUpIcon },
@@ -82,6 +84,7 @@ const navigation = [
     children: [
       { name: 'Usuários', href: '/dashboard/usuarios', icon: UserGroupIcon },
       { name: 'Configurações', href: '/dashboard/configuracoes', icon: Cog6ToothIcon },
+      { name: '🎨 UI Components', href: '/dashboard/ui-showcase', icon: DocumentDuplicateIcon },
       { name: 'Backup & Export', href: '/dashboard/backup', icon: DocumentDuplicateIcon },
     ]
   },

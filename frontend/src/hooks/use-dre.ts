@@ -25,7 +25,7 @@ export function usePlanoContas() {
     queryKey: ['plano-contas'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('plano_contas')
+        .from('planos_contas')
         .select('*')
         .order('codigo')
 
@@ -75,7 +75,7 @@ export function useDRE(filters?: DREFilters) {
           tipo,
           valor_total,
           competencia,
-          plano_conta:plano_contas(id, codigo, nome, categoria)
+          plano_conta:planos_contas(id, codigo, nome, categoria)
         `)
 
       if (filters?.periodo?.inicio) {
