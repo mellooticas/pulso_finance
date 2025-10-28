@@ -1,0 +1,27 @@
+🚀 POVOAMENTO PULSO FINANCE
+================================
+
+PARA COMEÇAR AGORA:
+
+1. Clique duas vezes em um destes arquivos:
+
+   🔥 POVOAR_TURBO.bat     → Mais rápido (5-8 min)
+   ✅ POVOAR_NORMAL.bat    → Mais seguro (10-15 min)
+
+2. Aguarde a conclusão
+
+3. Verifique os logs de validação ao final
+
+================================
+
+📚 Guia completo: COMO_EXECUTAR.md
+
+🔧 Scripts adicionais:
+   • scripts/orquestrar_povoamento_local.py
+   • scripts/README_POVOAMENTO.md
+   • scripts/EXECUTAR_POVOAMENTO.sh (Linux/Mac)
+   • scripts/EXECUTAR_POVOAMENTO.ps1 (PowerShell)
+
+⚡ RECOMENDADO: Use POVOAR_TURBO.bat
+
+================================

@@ -86,20 +86,20 @@ export default function FluxoCaixaPage() {
     return new Date(date).toLocaleDateString('pt-BR')
   }
 
-  // Dados para gráfico de evolução (dados mock temporários até ter dados históricos)
-  const fluxoChartData = fluxo ? {
-    labels: ['Hoje', 'Ontem', '2 dias', '3 dias', '4 dias', '5 dias', '6 dias'],
+  // ✅ Dados REAIS para gráfico de evolução baseados nos últimos 7 dias
+  const fluxoChartData = fluxo && fluxo.dias_anteriores ? {
+    labels: fluxo.dias_anteriores.map((d: any) => new Date(d.data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })),
     datasets: [
       {
         label: 'Entradas',
-        data: [fluxo.entradas_periodo, 8500, 7200, 9100, 6800, 8900, 7600],
+        data: fluxo.dias_anteriores.map((d: any) => d.entradas || 0),
         backgroundColor: 'rgba(34, 197, 94, 0.8)',
         borderColor: 'rgb(34, 197, 94)',
         borderWidth: 2,
       },
       {
         label: 'Saídas',
-        data: [fluxo.saidas_periodo, 6200, 5800, 7300, 4900, 6700, 5500],
+        data: fluxo.dias_anteriores.map((d: any) => d.saidas || 0),
         backgroundColor: 'rgba(239, 68, 68, 0.8)',
         borderColor: 'rgb(239, 68, 68)',
         borderWidth: 2,
@@ -107,21 +107,13 @@ export default function FluxoCaixaPage() {
     ]
   } : null
 
-  // Dados para gráfico de saldo acumulado
-  const saldoChartData = fluxo ? {
-    labels: ['Hoje', 'Ontem', '2 dias', '3 dias', '4 dias', '5 dias', '6 dias'],
+  // ✅ Dados REAIS para gráfico de saldo acumulado
+  const saldoChartData = fluxo && fluxo.dias_anteriores ? {
+    labels: fluxo.dias_anteriores.map((d: any) => new Date(d.data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })),
     datasets: [
       {
         label: 'Saldo Acumulado',
-        data: [
-          fluxo.saldo_total_atual,
-          fluxo.saldo_total_atual - fluxo.resultado_periodo,
-          fluxo.saldo_total_atual - (fluxo.resultado_periodo * 1.2),
-          fluxo.saldo_total_atual - (fluxo.resultado_periodo * 0.8),
-          fluxo.saldo_total_atual - (fluxo.resultado_periodo * 1.5),
-          fluxo.saldo_total_atual - (fluxo.resultado_periodo * 0.9),
-          fluxo.saldo_total_atual - (fluxo.resultado_periodo * 1.1)
-        ],
+        data: fluxo.dias_anteriores.map((d: any) => d.saldo_acumulado || 0),
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         tension: 0.4,

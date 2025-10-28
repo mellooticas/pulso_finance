@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
+import { useProdutos } from '@/hooks/useRealData'
 import { 
   PlusIcon,
   MagnifyingGlassIcon,
@@ -14,22 +15,6 @@ import {
   FunnelIcon
 } from '@heroicons/react/24/outline'
 
-// Interface temporária
-interface ProdutoServico {
-  id: string
-  codigo: string
-  nome: string
-  descricao?: string
-  tipo: 'produto' | 'servico'
-  categoria?: string
-  unidade?: string
-  valor_referencia?: number
-  ativo: boolean
-  observacoes?: string
-  created_at: string
-  updated_at: string
-}
-
 export default function ProdutosServicosPage() {
   const [filtros, setFiltros] = useState({
     busca: '',
@@ -40,43 +25,19 @@ export default function ProdutosServicosPage() {
 
   const [showModal, setShowModal] = useState(false)
 
-  // Dados mockados temporariamente
-  const produtos: ProdutoServico[] = [
-    {
-      id: '1',
-      codigo: 'PROD001',
-      nome: 'Produto A',
-      descricao: 'Descrição do produto A',
-      tipo: 'produto',
-      categoria: 'Categoria 1',
-      unidade: 'UN',
-      valor_referencia: 100.00,
-      ativo: true,
-      observacoes: 'Produto principal',
-      created_at: '2024-01-15',
-      updated_at: '2024-01-15'
-    },
-    {
-      id: '2',
-      codigo: 'SERV001',
-      nome: 'Serviço de Consultoria',
-      descricao: 'Consultoria especializada',
-      tipo: 'servico',
-      categoria: 'Serviços',
-      unidade: 'HR',
-      valor_referencia: 200.00,
-      ativo: true,
-      observacoes: 'Serviço premium',
-      created_at: '2024-01-20',
-      updated_at: '2024-01-20'
-    }
-  ]
+  // ✅ DADOS REAIS DO SUPABASE - retorna categorias com produtos
+  const { data: categoriasData = [], isLoading, error } = useProdutos()
+  
+  // Flatten all products from all categories
+  const produtos = categoriasData.flatMap((cat: any) => 
+    cat.produtos?.map((p: any) => ({ ...p, categoria: cat.nome })) || []
+  )
 
   // Filtrar produtos
-  const produtosFiltrados = produtos.filter((produto) => {
+  const produtosFiltrados = produtos.filter((produto: any) => {
     const matchBusca = !filtros.busca || 
-      produto.nome.toLowerCase().includes(filtros.busca.toLowerCase()) ||
-      produto.codigo.toLowerCase().includes(filtros.busca.toLowerCase())
+      produto.nome?.toLowerCase().includes(filtros.busca.toLowerCase()) ||
+      produto.codigo?.toLowerCase().includes(filtros.busca.toLowerCase())
     
     const matchTipo = !filtros.tipo || produto.tipo === filtros.tipo
     const matchCategoria = !filtros.categoria || produto.categoria === filtros.categoria
@@ -86,13 +47,35 @@ export default function ProdutosServicosPage() {
     return matchBusca && matchTipo && matchCategoria && matchStatus
   })
 
-  const categorias = [...new Set(produtos.map(p => p.categoria).filter(Boolean))]
+  const categorias = [...new Set(produtos.map((p: any) => p.categoria).filter(Boolean))]
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
-    }).format(value)
+    }).format(value || 0)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="text-lg font-semibold">Carregando produtos...</div>
+          <div className="text-sm text-gray-600 mt-2">Aguarde</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center text-red-600">
+          <div className="text-lg font-semibold">Erro ao carregar produtos</div>
+          <div className="text-sm mt-2">{String(error)}</div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -135,7 +118,7 @@ export default function ProdutosServicosPage() {
         <Card className="p-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {produtos.filter(p => p.tipo === 'produto').length}
+              {produtos.filter((p: any) => p.tipo === 'produto').length}
             </div>
             <div className="text-sm text-gray-600">Produtos</div>
           </div>
@@ -144,7 +127,7 @@ export default function ProdutosServicosPage() {
         <Card className="p-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">
-              {produtos.filter(p => p.tipo === 'servico').length}
+              {produtos.filter((p: any) => p.tipo === 'servico').length}
             </div>
             <div className="text-sm text-gray-600">Serviços</div>
           </div>

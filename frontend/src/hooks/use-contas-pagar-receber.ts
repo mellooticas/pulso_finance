@@ -40,11 +40,11 @@ export function useContasPagar(filters: ContasPagarReceberFilters = {}) {
             valor_total,
             status_aprovacao,
             loja:lojas(id, codigo, nome),
-            plano_conta:plano_contas(id, codigo, nome, categoria, tipo),
+            plano_conta:planos_contas(id, codigo, nome, categoria, tipo),
             centro_custo:centros_custo(id, codigo, nome)
           )
         `)
-        .eq('lancamento.tipo', 'despesa')  // Apenas despesas
+        .eq('lancamento.tipo', 'pagar')  // Apenas despesas
         .order('vencimento', { ascending: true })
 
       // 🔑 FILTRO PRINCIPAL: Por VENCIMENTO da parcela
@@ -101,11 +101,11 @@ export function useContasReceber(filters: ContasPagarReceberFilters = {}) {
             valor_total,
             status_aprovacao,
             loja:lojas(id, codigo, nome),
-            plano_conta:plano_contas(id, codigo, nome, categoria, tipo),
+            plano_conta:planos_contas(id, codigo, nome, categoria, tipo),
             centro_custo:centros_custo(id, codigo, nome)
           )
         `)
-        .eq('lancamento.tipo', 'receita')  // Apenas receitas
+        .eq('lancamento.tipo', 'receber')  // Apenas receitas
         .order('vencimento', { ascending: true })
 
       // 🔑 FILTRO PRINCIPAL: Por VENCIMENTO da parcela
@@ -154,7 +154,7 @@ export function useContasPagarStats(filters: ContasPagarReceberFilters = {}) {
           status,
           lancamento:lancamentos!inner(tipo, loja_id, centro_custo_id)
         `)
-        .eq('lancamento.tipo', 'despesa')
+        .eq('lancamento.tipo', 'pagar')
 
       if (filters.vencimento_inicio) {
         query = query.gte('vencimento', filters.vencimento_inicio)

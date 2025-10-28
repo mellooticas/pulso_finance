@@ -4,6 +4,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/auth-context'
 
+/**
+ * 🔄 MAPEAMENTO DE TIPOS: Frontend ↔ Banco
+ * 
+ * Frontend usa: 'receita' | 'despesa' (interface amigável)
+ * Banco tem: 'receber' | 'pagar' (dados reais povoados)
+ */
+function mapTipoToDatabase(tipo?: 'receita' | 'despesa'): 'receber' | 'pagar' | undefined {
+  if (!tipo) return undefined
+  return tipo === 'receita' ? 'receber' : 'pagar'
+}
+
+function mapTipoFromDatabase(tipo: string): 'receita' | 'despesa' {
+  return tipo === 'receber' ? 'receita' : 'despesa'
+}
+
 // Types para Lançamentos
 export interface Lancamento {
   id: string
@@ -101,7 +116,7 @@ export function useLancamentos(filters: LancamentoFilters = {}) {
         .select(`
           *,
           loja:lojas(id, codigo, nome),
-          plano_conta:plano_contas(id, codigo, nome, categoria)
+          plano_conta:planos_contas(id, codigo, nome, categoria)
         `)
         .order('competencia', { ascending: false })
 
@@ -115,7 +130,8 @@ export function useLancamentos(filters: LancamentoFilters = {}) {
       }
       
       if (filters.tipo) {
-        query = query.eq('tipo', filters.tipo)
+        const tipoDb = mapTipoToDatabase(filters.tipo)
+        if (tipoDb) query = query.eq('tipo', tipoDb)
       }
       
       if (filters.plano_id) {
@@ -151,7 +167,7 @@ export function useLancamentosStats(filters: LancamentoFilters = {}) {
       // Verificar se a tabela existe primeiro
       const { data: testData, error: testError } = await supabase
         .from('lancamentos')
-        .select('tipo, valor')
+        .select('tipo, valor_total')
         .limit(1)
 
       if (testError) {
@@ -166,12 +182,15 @@ export function useLancamentosStats(filters: LancamentoFilters = {}) {
 
       let query = supabase
         .from('lancamentos')
-        .select('tipo, valor, competencia')
+        .select('tipo, valor_total, competencia')
 
       // Aplicar mesmos filtros
       if (filters.loja_id) query = query.eq('loja_id', filters.loja_id)
       if (filters.centro_custo_id) query = query.eq('centro_custo_id', filters.centro_custo_id)
-      if (filters.tipo) query = query.eq('tipo', filters.tipo)
+      if (filters.tipo) {
+        const tipoDb = mapTipoToDatabase(filters.tipo)
+        if (tipoDb) query = query.eq('tipo', tipoDb)
+      }
       if (filters.data_inicio) query = query.gte('competencia', filters.data_inicio)
       if (filters.data_fim) query = query.lte('competencia', filters.data_fim)
 
@@ -182,12 +201,13 @@ export function useLancamentosStats(filters: LancamentoFilters = {}) {
         throw error
       }
 
-      // Calcular estatísticas
+      // Calcular estatísticas (com tipos do banco: receber/pagar)
       const stats = data.reduce((acc, lancamento) => {
-        if (lancamento.tipo === 'receita') {
-          acc.totalReceitas += lancamento.valor || 0
-        } else if (lancamento.tipo === 'despesa') {
-          acc.totalDespesas += lancamento.valor || 0
+        const tipoMapeado = mapTipoFromDatabase(lancamento.tipo)
+        if (tipoMapeado === 'receita') {
+          acc.totalReceitas += lancamento.valor_total || 0
+        } else if (tipoMapeado === 'despesa') {
+          acc.totalDespesas += lancamento.valor_total || 0
         }
         acc.totalLancamentos++
         return acc
@@ -259,7 +279,10 @@ export function useLancamentosPorLoja(filters: LancamentoFilters = {}) {
         `)
 
       // Aplicar filtros exceto loja_id
-      if (filters.tipo) query = query.eq('tipo', filters.tipo)
+      if (filters.tipo) {
+        const tipoDb = mapTipoToDatabase(filters.tipo)
+        if (tipoDb) query = query.eq('tipo', tipoDb)
+      }
       if (filters.data_inicio) query = query.gte('competencia', filters.data_inicio)
       if (filters.data_fim) query = query.lte('competencia', filters.data_fim)
 
